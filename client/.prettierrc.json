@@ -1,0 +1,11 @@
+{
+  "semi": true,
+  "bracketSpacing": true,
+  "bracketLine": true,
+  "singleQuote": false,
+  "useTabs": false,
+  "trailingComma": "es5",
+  "bracketSameLine": true,
+  "endOfLine": "auto",
+  "printWidth": 80
+}
