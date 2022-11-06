@@ -7,12 +7,12 @@ const multer = require("multer");
 const path = require("path");
 const axios = require("axios");
 const mysql = require("./mysql");
-
 app.use(
   express.json({
     limit: "50mb", // 최대 50메가
   })
 );
+
 
 let sess = {
   secret: "secret key",
@@ -75,9 +75,10 @@ app.post(
 );
 
 const bookRoute = require("./routes/book");
+const userRoute = require("./routes/user");
 
 app.use("/book", bookRoute);
-
+app.use("/user", userRoute);
 app.listen(3000, () => {
   console.log("서버가 포트 3000번으로 시작되었습니다.");
 });
