@@ -23,7 +23,7 @@
             >chatting</RouterLink
           >
         </li>
-        <li>
+        <li class="me-4">
           <RouterLink
             to="/history"
             class="fs-6 fw-bold"
@@ -31,17 +31,33 @@
             >history</RouterLink
           >
         </li>
+        <li>
+          <KakaoLogin></KakaoLogin>
+        </li>
       </ul>
     </nav>
   </header>
 </template>
 
 <script setup lang="ts">
+import KakaoLogin from "@/components/KakaoLogin.vue";
 import { useRoute } from "vue-router";
 const route = useRoute();
 console.log(route.path);
 </script>
 
+<script lang="ts">
+export default {
+  components: {},
+  data() {
+    return {};
+  },
+  created() {},
+  mounted() {},
+  unmounted() {},
+  methods: {},
+};
+</script>
 <style scoped>
 .active {
   color: #457e2b;
