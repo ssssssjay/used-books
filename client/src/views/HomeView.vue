@@ -29,7 +29,7 @@
     </section>
     <section class="sect-around col-8">
       <p class="h2 text-center">내 주변에는 이런 책들이 있어요</p>
-      <div class="canvas mb-4">canvas-section</div>
+      <KakaoMapComponent></KakaoMapComponent>
       <ul>
         <li v-for="i in 5" :key="i">
           <UsedBookCard></UsedBookCard>
@@ -43,6 +43,7 @@
 import BookCard from "@/components/BookCard.vue";
 import UsedBookCard from "@/components/UsedBookCard.vue";
 import BookSearchInput from "@/components/BookSearchInput.vue";
+import KakaoMapComponent from "@/components/KakaoMapComponent.vue";
 import { BOOK_CODE } from "@/stores/BookCode";
 
 import axios from "axios";
@@ -58,7 +59,7 @@ const getBestSeller = async (categoryId: number) => {
       },
     })
     .then((res) => res.data);
-  console.log(result);
+  // console.log(result);
   // console.log(result.item);
   bestSellerList.value = result.item;
 };
@@ -66,14 +67,14 @@ const getBestSeller = async (categoryId: number) => {
 getBestSeller(0);
 
 const selectCategory = (categoryId: number) => {
-  console.log(categoryId);
+  // console.log(categoryId);
   getBestSeller(categoryId);
 };
 </script>
 
 <style scoped>
 .d-flex {
-  gap: 10px;
+  gap: 20px;
 }
 /* 메인 검색 영역 */
 .sect-search {
@@ -87,6 +88,7 @@ const selectCategory = (categoryId: number) => {
 .sect-best-seller {
   padding-block: 36px;
   margin: 0 auto 24px;
+  border: 1px solid dodgerblue;
 }
 .btn-category {
   border: 1px solid #222222;
