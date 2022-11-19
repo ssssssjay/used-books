@@ -17,13 +17,15 @@
           </button>
         </li>
       </ul>
+
       <ol class="d-flex">
         <li v-for="item in bestSellerList" :key="item.isbn" class="">
           <BookCard
             :category="item.categoryName"
             :imgPath="item.cover"
             :title="item.title"
-            :author="item.author"></BookCard>
+            :author="item.author"
+            @click="goToDetail(item.itemId)"></BookCard>
         </li>
       </ol>
     </section>
@@ -44,10 +46,10 @@ import BookCard from "@/components/BookCard.vue";
 import UsedBookCard from "@/components/UsedBookCard.vue";
 import BookSearchInput from "@/components/BookSearchInput.vue";
 import KakaoMapComponent from "@/components/KakaoMapComponent.vue";
-import { BOOK_CODE } from "@/stores/BookCode";
 
 import axios from "axios";
 import { ref } from "vue";
+import { BOOK_CODE } from "@/store/BookCode";
 
 const bestSellerList = ref([] as any);
 
@@ -59,8 +61,8 @@ const getBestSeller = async (categoryId: number) => {
       },
     })
     .then((res) => res.data);
-  // console.log(result);
-  // console.log(result.item);
+  console.log(result);
+  console.log(result.item);
   bestSellerList.value = result.item;
 };
 
@@ -71,7 +73,23 @@ const selectCategory = (categoryId: number) => {
   getBestSeller(categoryId);
 };
 </script>
-
+<script lang="ts">
+export default {
+  mounted() {},
+  unmounted() {},
+  methods: {
+    goToDetail(id: number) {
+      window.scrollTo(0, 0);
+      const path = `/book/${id}`;
+      this.$router.push({
+        path: path,
+        name: "book",
+        params: { bookId: id },
+      });
+    },
+  },
+};
+</script>
 <style scoped>
 .d-flex {
   gap: 20px;

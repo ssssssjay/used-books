@@ -5,24 +5,24 @@ export default {
   mounted() {},
   unmounted() {},
   methods: {
-    async $get(url) {
+    async $get(url: string) {
       return (
         await axios.get(url).catch((e) => {
           console.log(e);
         })
       ).data;
     },
-    async $post(url, data) {
+    async $post(url: string, data: any) {
       return await axios.post(url, data).catch((e) => {
         console.log(e);
       });
     },
-    async $put(url, data) {
+    async $put(url: string, data: any) {
       return await axios.put(url, data).catch((e) => {
         console.log(e);
       });
     },
-    async $delete(url) {
+    async $delete(url: string) {
       return await axios.delete(url).catch((e) => {
         console.log(e);
       });

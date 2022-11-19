@@ -36,19 +36,22 @@ router.get("/best", async (req, res) => {
 
 router.get("/search", async (req, res) => {
   try {
-    // http://localhost:3000/book/search?q=자바스크립트
+    // http://localhost:3000/book/search?q=자바스크립트?s=SalesPoint
     console.log(req.path); // /search
     console.log(req.query); // { q: '자바스크립트' }
     console.log(req.params); // { }
+    console.log(req.query.s);
     const searchQuery = req.query.q;
+    const sortType = req.query.s;
     const result = await axios
       .get("http://www.aladin.co.kr/ttb/api/ItemSearch.aspx", {
         params: {
           ttbkey: "ttbksj26190321932001",
           Query: searchQuery,
           QueryType: "Keyword",
-          MaxResults: 5,
+          MaxResults: 50,
           start: 1,
+          Sort: sortType,
           SearchTarget: "Book",
           output: "js",
           Version: 20131101,

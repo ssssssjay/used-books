@@ -2,6 +2,7 @@ const express = require("express");
 const session = require("express-session");
 const cors = require("cors");
 const app = express();
+const server = require("http").createServer(app);
 require("dotenv").config({ path: `mysql/.env` });
 const multer = require("multer");
 const path = require("path");
@@ -12,7 +13,6 @@ app.use(
     limit: "50mb", // 최대 50메가
   })
 );
-
 
 let sess = {
   secret: "secret key",
@@ -32,6 +32,7 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
+
 // 이미지 업로드
 const imageStorage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -79,6 +80,42 @@ const userRoute = require("./routes/user");
 
 app.use("/book", bookRoute);
 app.use("/user", userRoute);
-app.listen(3000, () => {
+
+// =======================채팅=================
+const io = require("socket.io")(server, {
+  pingTimeout: 1000,
+  cors: {
+    origin: "http://localhost:8080",
+    methods: ["GET", "POST"],
+  },
+});
+
+app.get("/", (req, res) => {
+  res.send("Helloooooo");
+});
+
+io.on("connection", (socket) => {
+  // client로부터의 메시지가 수신되면
+  socket.on("chat", (data) => {
+    console.log(`Message from ${data.name}: ${data.msg}`);
+
+    let msg = {
+      from: {
+        name: data.name,
+        avatar: data.avatar,
+      },
+      msg: data.msg,
+    };
+
+    // 메시지를 전송한 client를 제외한 모든 client에게 메시지를 전송한다
+    socket.broadcast.emit("chat", msg);
+  });
+
+  socket.on("disconnect", () => {
+    console.log(`user disconnected: ${socket.name}`);
+  });
+});
+
+server.listen(3000, () => {
   console.log("서버가 포트 3000번으로 시작되었습니다.");
 });
