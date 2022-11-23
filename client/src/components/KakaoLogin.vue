@@ -2,13 +2,13 @@
   <div>
     <div
       class="fs-6 fw-bold"
-      v-show="kakaoData.length == 0"
+      v-show="this.login == false"
       @click="kakaoLogin()">
       login
     </div>
     <div
       class="fs-6 fw-bold"
-      v-show="kakaoData.length != 0"
+      v-show="this.login == true"
       @click="kakaoLogout()">
       logout
     </div>
@@ -19,7 +19,7 @@ export default {
   components: {},
   data() {
     return {
-      kakaoData: [],
+      login: false,
     };
   },
   setup() {},
@@ -38,20 +38,30 @@ export default {
         url: "/v2/user/me",
         success: (res) => {
           const kakao_account = res.kakao_account;
-          const nickname = kakao_account.profile.nickname;
-          const email = kakao_account.email;
-          const image = kakao_account.profile.profile_image_url;
-          console.log("account", kakao_account);
-          console.log("email", email);
-          console.log("nickname", nickname);
-          console.log("image", image);
-          this.kakaoData = kakao_account;
-          alert(`${nickname}님 환영합니다`);
+          this.dbRes(kakao_account);
         },
         fail: (error) => {
           console.log(error);
         },
       });
+    },
+    // uniq 설정
+    async dbRes(data) {
+      await this.$post("http://localhost:3000/user/login", {
+        param: [
+          {
+            user_nickname: data.profile.nickname,
+            user_email: data.email,
+            user_image: data.profile.profile_image_url,
+          },
+          {
+            user_nickname: data.profile.nickname,
+            user_image: data.profile.profile_image_url,
+          },
+        ],
+      });
+      this.$store.commit("setUser", data);
+      this.login = true;
     },
     kakaoLogout() {
       // window.Kakao.API.request({
@@ -69,9 +79,10 @@ export default {
         return;
       }
       window.Kakao.Auth.logout(function () {
-        alert("로그아웃 되었습니다.", window.Kakao.Auth.getAccessToken());
+        window.Kakao.Auth.getAccessToken();
       });
-      this.kakaoData = [];
+      this.login = false;
+      this.$store.commit("setUser", {});
     },
   },
 };

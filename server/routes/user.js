@@ -8,7 +8,7 @@ router.get("/", async (req, res) => {
   res.send(user);
 });
 
-router.post("/", async (req, res) => {
+router.post("/login", async (req, res) => {
   const result = await mysql.query("userInsert", req.body.param);
   res.send(result);
 });

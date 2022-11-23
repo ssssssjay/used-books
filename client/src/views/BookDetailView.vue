@@ -1,6 +1,7 @@
 <template>
   <div>
     <div class="container">
+      {{ bookNum }}
       <div class="content-box">
         <div class="title">
           <div class="book-category mb-2">{{ bookData.bookCategory }}</div>
@@ -66,8 +67,6 @@ export default {
         des: "<p>PROMENTOUS V2 입니다.&nbsp;</p><p><br></p><p>기존의 메인 페이지는 게시판들을 모아 놓은 인상이 강하여</p><p>서비스를 소개하는 페이지로 새단장 하였습니다.</p><p>개선된 글 작성 기능을 소개합니다</p><p><br></p><p>필수요건 필터링 분기처리를 추가하여, 어떤 필수조건이 누락되었는지 알 수 있게 되었습니다.</p><p>정규표현식 추가를 통해 오류가 나는 일부 상황을 해결하였습니다.</p><p>개선된 모집 게시판을 소개합니다</p><p><br></p><p>실제 DB와 연동시 응답시간이 늘어난 현상을 로딩 화면과 기능을 구현하여 해결했습니다.</p><p>열람중인 페이지를 알 수 없던 부분을, 시각적으로 알 수 있도록 풀어냈습니다.</p><p>개선된 팀 관리 페이지를 소개합니다</p><p><br></p><p>전체적으로 UI를 개선했습니다.</p><p>완료된 프로젝트에 한해서, 동료평가 기능을 추가 구현했습니다.</p><p>그 외의 개선사항들을 소개합니다</p><p><br></p><p>페이지별로 분리되어 있던 모달 컴포넌트를 하나의 컴포넌트로 통합하였습니다.</p><p>평가기능 구현과 동시에 프로필 모달 창에서도 유저의 평판 점수를 확인할 수 있게 되었습니다.</p><p>외부 라이브러리를 사용할 때, 필요한 부분만 사용하도록 세팅을 바꾸었습니다.</p><p>vue3-editor, vue-datepicker, vue-star-rating</p><h1><br></h1>",
         imgUrl: [
           "https://user-images.githubusercontent.com/89081441/195911630-23a4ab4d-5314-4071-aeff-daad17b470f2.png",
-          "https://user-images.githubusercontent.com/89081441/195911637-2389b329-0503-40dc-84be-ce95cac81d05.png",
-          "https://user-images.githubusercontent.com/89081441/195911641-207ac87f-2b00-420e-a43d-d44ff3da4d21.png",
         ],
       },
       usedList: [
@@ -227,10 +226,15 @@ export default {
           imgUrl: "http://image.yes24.com/goods/111088149/XL",
         },
       ],
+      pageUrl: "",
+      bookNum: "",
     };
   },
   setup() {},
-  created() {},
+  created() {
+    this.pageUrl = window.document.location.href;
+    this.bookNum = this.pageUrl.split("/")[4];
+  },
   mounted() {},
   unmounted() {},
   methods: {},

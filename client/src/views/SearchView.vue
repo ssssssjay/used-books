@@ -2,38 +2,35 @@
   <div>
     <div class="bg">
       <div class="container">
+        {{ sortType }}
+
         <div class="content-box">
+          <div class="sort">
+            <select
+              class="form-select"
+              aria-label="Default select example"
+              v-model="sortType"
+              @click="getBookList(searchName, sortType)">
+              <option selected disabled>정렬</option>
+              <option value="Accuracy">관련도</option>
+              <option value="PublishTime">출간일</option>
+              <option value="Title">제목</option>
+              <option value="SalesPoint">판매량</option>
+            </select>
+          </div>
           <div class="main">
-            <div class="sort">
-              <span class="dropdown">
-                <a
-                  class="btn btn-secondary dropdown-toggle"
-                  role="button"
-                  id="dropdownMenuLink"
-                  data-bs-toggle="dropdown"
-                  aria-expanded="false">
-                  <span>정렬</span>
-                </a>
-                <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                  <li>
-                    <div class="dropdown-item mb-1">관련도(기본값)</div>
-                  </li>
-                  <li>
-                    <div class="dropdown-item mb-1">출간일</div>
-                  </li>
-                  <li>
-                    <div class="dropdown-item mb-1">제목</div>
-                  </li>
-                  <li>
-                    <div class="dropdown-item mb-1">판매량</div>
-                  </li>
-                </ul>
-              </span>
+            <div class="book-card" v-for="item in listData" :key="item">
+              <BookCard
+                :imgPath="item.cover"
+                :title="item.title"
+                :author="item.author"
+                @click="goToDetail(item.itemId)"></BookCard>
             </div>
-            <div class="book-card" v-for="i in 10" :key="i">
-              <BookCard></BookCard>
+            <div class="pag">
+              <Pagination
+                :pageSetting="pageDataSetting(total, limit, block, page)"
+                @paging="pagingMethod"></Pagination>
             </div>
-            <div class="pag"></div>
           </div>
         </div>
       </div>
@@ -43,57 +40,89 @@
 
 <script lang="ts">
 import BookCard from "../components/BookCard.vue";
-
+import Pagination from "@/components/layouts/Pagination.vue";
 export default {
-  components: { BookCard },
+  components: { BookCard, Pagination },
   data() {
     return {
-      searchData: [{ bookName: "" }],
+      searchName: "자바스크립트",
+      searchList: [],
+      sortType: "Accuracy",
+      listData: [],
+      total: 0,
+      page: 1,
+      limit: 10,
+      block: 5,
     };
   },
   setup() {},
-  created() {},
+  created() {
+    this.getBookList(this.searchName, this.sortType);
+  },
   mounted() {},
   unmounted() {},
-  methods: {},
+  methods: {
+    async getBookList(searchName: any, sortType: any) {
+      const response = await this.$get(
+        `http://localhost:3000/book/search?q=${searchName}&s=${sortType}`
+      );
+      this.searchList = response.item;
+      this.total = this.searchList.length;
+      this.pagingMethod(this.page);
+    },
+    goToDetail(id: number) {
+      window.scrollTo(0, 0);
+      const path = `/book/${id}`;
+      this.$router.push({
+        path: path,
+        name: "book",
+        params: { bookId: id },
+      });
+    },
+    pagingMethod(page: any) {
+      this.listData = this.searchList.slice(
+        (page - 1) * this.limit,
+        page * this.limit
+      );
+      this.page = page;
+      this.pageDataSetting(this.total, this.limit, this.block, page);
+    },
+
+    pageDataSetting(total: any, limit: any, block: any, page: any) {
+      const totalPage = Math.ceil(total / limit);
+      let currentPage = page;
+      const first =
+        currentPage > 1 ? parseInt(currentPage, 10) - parseInt(1, 10) : null;
+      const end =
+        totalPage !== currentPage
+          ? parseInt(currentPage, 10) + parseInt(1, 10)
+          : null;
+
+      let startIndex = (Math.ceil(currentPage / block) - 1) * block + 1;
+      let endIndex =
+        startIndex + block > totalPage ? totalPage : startIndex + block - 1;
+      let list = [];
+      for (let index = startIndex; index <= endIndex; index++) {
+        list.push(index);
+      }
+      return { first, end, list, currentPage };
+    },
+  },
 };
 </script>
 
 <style scoped>
 .content-box {
-  width: 1440px;
-  height: 100vh;
-  display: grid;
-  grid-template-columns: 1fr 7fr;
-  grid-template-areas:
-    "aside main"
-    "aside main";
   padding: 30px;
 }
-.aside {
-  grid-area: aside;
-  border: 2px solid #dae0e5;
-  border-radius: 5px;
-  height: 30%;
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 20px;
-}
-.radio {
-  width: 120px;
-  margin-bottom: 20px;
-  font-size: 15px;
-}
+
 .main {
-  grid-area: main;
   display: flex;
   flex-wrap: wrap;
   height: 90%;
 }
 .sort {
-  width: 100%;
+  width: 100px;
   height: 50px;
   margin-left: 20px;
 }
@@ -104,5 +133,8 @@ export default {
 .pag {
   width: 100%;
   height: 50px;
+  margin-top: 50px;
+  display: flex;
+  justify-content: center;
 }
 </style>

@@ -1,5 +1,6 @@
 <template>
   <header class="py-3 border-bottom shadow-sm sticky-top bg-white">
+    {{ userInfo }}
     <nav class="container">
       <ul class="d-flex flex-wrap align-items-center">
         <li class="me-auto">
@@ -39,23 +40,29 @@
   </header>
 </template>
 
-<script setup lang="ts">
+<script setup>
 import KakaoLogin from "@/components/KakaoLogin.vue";
 import { useRoute } from "vue-router";
 const route = useRoute();
 console.log(route.path);
 </script>
 
-<script lang="ts">
+<script>
 export default {
   components: {},
   data() {
     return {};
   },
+
   created() {},
   mounted() {},
   unmounted() {},
   methods: {},
+  computed: {
+    userInfo() {
+      return this.$store.state.userInfo;
+    },
+  },
 };
 </script>
 <style scoped>
