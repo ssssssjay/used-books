@@ -19,12 +19,13 @@
             </select>
           </div>
           <div class="main">
-            <div class="book-card" v-for="item in listData" :key="item">
+            <div class="book-card" v-for="item in searchList" :key="item.isbn">
               <BookCard
+                :category="item.categoryName"
                 :imgPath="item.cover"
                 :title="item.title"
                 :author="item.author"
-                @click="goToDetail(item.itemId)"></BookCard>
+                @click="moveToBookDetail(item.isbn13)"></BookCard>
             </div>
             <div class="pag">
               <Pagination
@@ -41,11 +42,14 @@
 <script lang="ts">
 import BookCard from "../components/BookCard.vue";
 import Pagination from "@/components/layouts/Pagination.vue";
+import { useRoute } from "vue-router";
+import axios from "axios";
+
 export default {
   components: { BookCard, Pagination },
   data() {
     return {
-      searchName: "자바스크립트",
+      searchName: "",
       searchList: [],
       sortType: "Accuracy",
       listData: [],
@@ -59,7 +63,13 @@ export default {
   created() {
     this.getBookList(this.searchName, this.sortType);
   },
-  mounted() {},
+  mounted() {
+    // TODO: 68 ~ 71 부분은 영석님의 호출 방식 및 메소드와 다른 부분이 많아 주석 처리 해놓습니다.
+    // line122를 참고하시어 저한테 질문남겨주세요.
+    // const route = useRoute();
+    // const query: any = route.query.q;
+    // this.searchBook(query);
+  },
   unmounted() {},
   methods: {
     async getBookList(searchName: any, sortType: any) {
@@ -70,13 +80,13 @@ export default {
       this.total = this.searchList.length;
       this.pagingMethod(this.page);
     },
-    goToDetail(id: number) {
+    moveToBookDetail(bookId: number) {
       window.scrollTo(0, 0);
-      const path = `/book/${id}`;
       this.$router.push({
-        path: path,
         name: "book",
-        params: { bookId: id },
+        query: {
+          id: bookId,
+        },
       });
     },
     pagingMethod(page: any) {
@@ -106,6 +116,18 @@ export default {
         list.push(index);
       }
       return { first, end, list, currentPage };
+    },
+    // TODO: 아래의 메소드는 제가 기존에 구현해온 메소드입니다.
+    // 이 메소드를 참고하셔서 저한테 질문주시거나, 영석님 메소드 수정하시면 될 것 같습니다.
+    async searchBook(query: string) {
+      const result = await axios.get("http://localhost:3000/book/search", {
+        // TODO: startNum같은게 있어야 페이지네이션 가능
+        params: {
+          q: query,
+          cnt: 10,
+        },
+      });
+      this.searchList = result.data.item;
     },
   },
 };
