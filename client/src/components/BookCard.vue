@@ -1,12 +1,11 @@
 <template>
   <div class="card card-normal">
+    <div class="book-img-wrapper">
+      <img class="book-img" :src="props.imgPath" alt="책커버이미지" />
+    </div>
     <div class="card-body">
-      <div class="book-img-wrapper mb-2">
-        <img class="book-img" :src="props.imgPath" alt="책커버이미지" />
-      </div>
       <div class="book-desc-wrapper">
-        <div class="text-muted mb-3">{{ props.category }}</div>
-        <!-- <div class="text-muted mb-3">{{ convertedCategory }}</div> -->
+        <div class="text-muted mb-3">{{ convertedCategory }}</div>
         <h3 class="card-title mb-3">{{ props.title }}</h3>
         <span class="card-subtitle text-muted">{{ props.author }}</span>
       </div>
@@ -17,14 +16,18 @@
 <script setup lang="ts">
 import { computed } from "vue";
 
-const props = defineProps({
+const props: any = defineProps({
   category: String,
   imgPath: String,
   title: String,
   author: String,
 });
 
-const convertedCategory = computed(() => props.category.split(">")[1]);
+const convertedCategory = computed(() =>
+  props.category?.split(">")[1] === undefined
+    ? props.category
+    : props.category.split(">")[1]
+);
 </script>
 
 <style scoped>
@@ -34,24 +37,19 @@ img {
 .card {
   cursor: pointer;
   transition: all ease-in-out 0.1s;
-}
-.card:hover {
-  transform: translateY(-6px);
+  width: 200px;
 }
 .card-normal {
-  width: 180px;
-  height: 340px;
-}
-.card-normal .book-img-wrapper {
-  width: 150px;
-  height: 200px;
-  /* width: 90%; */
   overflow: hidden;
 }
-.card-normal .card-title {
-  font-weight: 700;
+.card-normal .book-img-wrapper {
+  height: 260px;
+  overflow: hidden;
 }
 .card-normal .text-muted {
-  font-size: 14px;
+  font-size: 12px;
+}
+.card-body {
+  padding: 10px;
 }
 </style>

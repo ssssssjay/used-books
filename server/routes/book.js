@@ -43,18 +43,49 @@ router.get("/search", async (req, res) => {
     console.log(req.query.s);
     const searchQuery = req.query.q;
     const sortType = req.query.s;
+    const countOfResults = req.query.cnt ? req.query.cnt : 5;
     const result = await axios
       .get("http://www.aladin.co.kr/ttb/api/ItemSearch.aspx", {
         params: {
           ttbkey: "ttbksj26190321932001",
           Query: searchQuery,
           QueryType: "Keyword",
-          MaxResults: 50,
+          MaxResults: countOfResults,
           start: 1,
           Sort: sortType,
           SearchTarget: "Book",
           output: "js",
           Version: 20131101,
+          Cover: "Big",
+        },
+      })
+      .then((res) => res.data);
+
+    console.log("success");
+    res.send(result);
+  } catch (error) {
+    console.log(error);
+    res.send(error.message);
+  }
+});
+
+router.get("/detail", async (req, res) => {
+  try {
+    // http://localhost:3000/book/detail?q=자바스크립트
+    console.log(req.path); // /detail
+    console.log(req.query); // { q: '자바스크립트' }
+    console.log(req.params); // { }
+    const itemId = req.query.id;
+    console.log(itemId);
+    const result = await axios
+      .get("http://www.aladin.co.kr/ttb/api/ItemLookUp.aspx", {
+        params: { 
+          ttbkey: "ttbksj26190321932001",
+          ItemId: itemId,
+          ItemIdType: "ISBN13",
+          output: "js",
+          Version: 20131101,
+          Cover: "Big",
         },
       })
       .then((res) => res.data);
