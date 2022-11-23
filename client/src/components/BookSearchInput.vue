@@ -1,13 +1,17 @@
 <template>
   <div>
     <div class="main-search-wrapper">
-      <input
-        class="main-search-inp"
-        type="text"
-        placeholder="검색어를 입력하세요"
-        :value="searchBookQuery"
-        @input="searchBook" />
-      <button class="main-search-btn"><i class="bi bi-search h5"></i></button>
+      <form @submit.prevent="submitBookSearchInput">
+        <input
+          class="main-search-inp"
+          type="text"
+          placeholder="검색어를 입력하세요"
+          :value="searchBookQuery"
+          @input="searchBook" />
+        <button type="submit" class="main-search-btn">
+          <i class="bi bi-search h5"></i>
+        </button>
+      </form>
     </div>
     <ul class="list-group position-absolute mt-1" v-if="bookSearchResults">
       <p class="list-group-item list-group-item-action" v-if="false">error!</p>
@@ -20,7 +24,8 @@
         <li
           class="list-group-item list-group-item-action"
           v-for="book in bookSearchResults"
-          :key="book">
+          :key="book"
+          @click="moveToBookDetail(book.isbn13)">
           {{ book.title }}
         </li>
       </template>
@@ -31,6 +36,8 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import axios from "axios";
+import { useRouter } from "vue-router";
+const router = useRouter();
 
 const searchBookQuery = ref("");
 const queryTimeout = ref(0);
@@ -54,6 +61,24 @@ const searchBook = (e: Event) => {
       bookSearchResults.value = null;
     }
   }, 800);
+};
+
+const submitBookSearchInput = () => {
+  router.push({
+    name: "search",
+    query: {
+      q: searchBookQuery.value,
+    },
+  });
+};
+
+const moveToBookDetail = (bookid: any) => {
+  router.push({
+    name: "book",
+    query: {
+      id: bookid,
+    },
+  });
 };
 </script>
 
