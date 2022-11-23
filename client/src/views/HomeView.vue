@@ -25,7 +25,7 @@
             :imgPath="item.cover"
             :title="item.title"
             :author="item.author"
-            @click="goToDetail(item.itemId)"></BookCard>
+            @click="moveToBookDetail(item.isbn13)"></BookCard>
         </li>
       </ol>
     </section>
@@ -46,10 +46,12 @@ import BookCard from "@/components/BookCard.vue";
 import UsedBookCard from "@/components/UsedBookCard.vue";
 import BookSearchInput from "@/components/BookSearchInput.vue";
 import KakaoMapComponent from "@/components/KakaoMapComponent.vue";
-
+import { useRouter } from "vue-router";
 import axios from "axios";
 import { ref } from "vue";
 import { BOOK_CODE } from "@/store/BookCode";
+
+const router = useRouter();
 
 const bestSellerList = ref([] as any);
 
@@ -69,25 +71,17 @@ const getBestSeller = async (categoryId: number) => {
 getBestSeller(0);
 
 const selectCategory = (categoryId: number) => {
-  // console.log(categoryId);
   getBestSeller(categoryId);
 };
-</script>
-<script lang="ts">
-export default {
-  mounted() {},
-  unmounted() {},
-  methods: {
-    goToDetail(id: number) {
-      window.scrollTo(0, 0);
-      const path = `/book/${id}`;
-      this.$router.push({
-        path: path,
-        name: "book",
-        params: { bookId: id },
-      });
+
+const moveToBookDetail = (bookid: any) => {
+  window.scrollTo(0, 0);
+  router.push({
+    name: "book",
+    query: {
+      id: bookid,
     },
-  },
+  });
 };
 </script>
 <style scoped>
