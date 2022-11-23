@@ -77,9 +77,11 @@ app.post(
 
 const bookRoute = require("./routes/book");
 const userRoute = require("./routes/user");
+const libraryRoute = require("./routes/library");
 
 app.use("/book", bookRoute);
 app.use("/user", userRoute);
+app.use("/library", libraryRoute);
 
 // =======================채팅=================
 const io = require("socket.io")(server, {
