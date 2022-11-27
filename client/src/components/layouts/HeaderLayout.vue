@@ -1,6 +1,5 @@
 <template>
   <header class="py-3 border-bottom shadow-sm sticky-top bg-white">
-    {{ userInfo }}
     <nav class="container">
       <ul class="d-flex flex-wrap align-items-center">
         <li class="me-auto">

@@ -1,12 +1,12 @@
 <template>
   <div>
     <div v-if="pageSetting.list.length" aria-label="Page navigation example">
-      <i
+      <!-- <i
         class="bi bi-chevron-double-left"
         v-if="pageSetting.first !== null"
         color="#dfdfdf"
         @click="pageSetting.first !== null ? sendPage(pageSetting.first) : ''">
-      </i>
+      </i> -->
 
       <ul class="pagination">
         <li
@@ -17,11 +17,11 @@
           <button class="page-link" @click="sendPage(page)">{{ page }}</button>
         </li>
       </ul>
-      <i
+      <!-- <i
         class="bi bi-chevron-double-right"
         v-if="pageSetting.end !== null"
         color="#dfdfdf"
-        @click="pageSetting.end !== null ? sendPage(pageSetting.end) : ''"></i>
+        @click="pageSetting.end !== null ? sendPage(pageSetting.end) : ''"></i> -->
     </div>
   </div>
 </template>

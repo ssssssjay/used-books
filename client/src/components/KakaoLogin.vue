@@ -2,13 +2,13 @@
   <div>
     <div
       class="fs-6 fw-bold"
-      v-show="this.login == false"
+      v-show="this.userInfo.email == undefined"
       @click="kakaoLogin()">
       login
     </div>
     <div
       class="fs-6 fw-bold"
-      v-show="this.login == true"
+      v-show="this.userInfo.email != undefined"
       @click="kakaoLogout()">
       logout
     </div>
@@ -18,14 +18,17 @@
 export default {
   components: {},
   data() {
-    return {
-      login: false,
-    };
+    return {};
   },
   setup() {},
   created() {},
   mounted() {},
   unmounted() {},
+  computed: {
+    userInfo() {
+      return this.$store.state.userInfo;
+    },
+  },
   methods: {
     kakaoLogin() {
       window.Kakao.Auth.login({
@@ -61,7 +64,6 @@ export default {
         ],
       });
       this.$store.commit("setUser", data);
-      this.login = true;
     },
     kakaoLogout() {
       // window.Kakao.API.request({
@@ -81,7 +83,6 @@ export default {
       window.Kakao.Auth.logout(function () {
         window.Kakao.Auth.getAccessToken();
       });
-      this.login = false;
       this.$store.commit("setUser", {});
     },
   },
