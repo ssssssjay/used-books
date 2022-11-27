@@ -82,6 +82,7 @@ export default {
       extraAddress: "",
       detailAddress: "",
       phone: "",
+      daumData: "",
     };
   },
   setup() {},
@@ -118,8 +119,25 @@ export default {
             this.extraAddress = "";
           }
           this.postcode = data.zonecode;
+          console.log(data);
+          this.transLatLon(data.roadAddress);
         },
       }).open();
+    },
+    async transLatLon(data: any) {
+      let options = {
+        method: "GET",
+        headers: {
+          Authorization: "KakaoAK 50bbb5205dc8fcc9c2611542015a54d5",
+        },
+      };
+      let result = await fetch(
+        `https://dapi.kakao.com/v2/local/search/address.json?analyze_type=similar&page=1&size=10&query=${data}`,
+        options
+      );
+      let json = await result.json(); // 알아서 json 형태로 해줌
+
+      console.log(json);
     },
   },
 };
