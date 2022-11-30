@@ -8,6 +8,9 @@
           >
         </li>
         <li class="me-4">
+          <BookSearchInput v-if="!isHomeRoute"></BookSearchInput>
+        </li>
+        <li class="me-4">
           <RouterLink
             to="/library"
             class="fs-6 fw-bold"
@@ -41,9 +44,15 @@
 
 <script setup>
 import KakaoLogin from "@/components/KakaoLogin.vue";
+import BookSearchInput from "@/components/BookSearchInput.vue";
+
 import { useRoute } from "vue-router";
+import { computed } from "vue";
+
 const route = useRoute();
-console.log(route.path);
+const isHomeRoute = computed(
+  () => route.path === "/" || route.path === "/used-book/create"
+);
 </script>
 
 <script>
