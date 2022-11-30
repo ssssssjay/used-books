@@ -1,7 +1,8 @@
 <template>
   <div>
     <div class="container">
-      <div class="content-box">
+      {{ bookNum }}
+      <div class="content-box col-10 m-auto">
         <div class="sub">
           <div class="book-category mb-2">{{ bookData.categoryName }}</div>
           <div class="book-title">
@@ -234,8 +235,7 @@ export default {
 </script>
 <style scoped>
 .content-box {
-  width: 1200px;
-  height: 1500px;
+  height: 100%;
   display: grid;
   grid-template-columns: 7fr 10fr;
   grid-template-rows: 2fr 2fr 2fr 2fr;
