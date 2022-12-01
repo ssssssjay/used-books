@@ -4,6 +4,7 @@
       <form @submit.prevent="submitBookSearchInput">
         <input
           class="main-search-inp"
+          :class="{ header: !isHomeRoute }"
           type="text"
           placeholder="검색어를 입력하세요"
           :value="searchBookQuery"
@@ -34,10 +35,12 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, computed } from "vue";
 import axios from "axios";
-import { useRouter } from "vue-router";
+import { useRouter, useRoute } from "vue-router";
+
 const router = useRouter();
+const route = useRoute();
 
 const searchBookQuery = ref("");
 const queryTimeout = ref(0);
@@ -55,7 +58,6 @@ const searchBook = (e: Event) => {
           q: searchBookQuery.value,
         },
       });
-      console.log(result.data.item);
       bookSearchResults.value = result.data.item;
     } else {
       bookSearchResults.value = null;
@@ -80,6 +82,8 @@ const moveToBookDetail = (bookid: any) => {
     },
   });
 };
+
+const isHomeRoute = computed(() => route.path === "/");
 </script>
 
 <style scoped>
@@ -100,6 +104,14 @@ const moveToBookDetail = (bookid: any) => {
 .main-search-inp:focus {
   box-shadow: rgba(0, 0, 0, 0.24) 0px 8px 12px;
   outline: solid #457e2b;
+}
+.main-search-inp.header {
+  width: 180px;
+  border-radius: 3px;
+  border: 1px solid #bdbdbd;
+  padding: 8px 12px;
+  font-size: 14px;
+  box-shadow: none;
 }
 .main-search-btn {
   position: absolute;

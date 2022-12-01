@@ -8,7 +8,7 @@
               class="form-select"
               aria-label="Default select example"
               v-model="sortType"
-              @click="searchBook(searchName, sortType)">
+              @change="searchBook(searchName, sortType)">
               <option selected disabled>정렬</option>
               <option value="Accuracy">관련도</option>
               <option value="PublishTime">출간일</option>
