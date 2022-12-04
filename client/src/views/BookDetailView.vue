@@ -1,8 +1,7 @@
 <template>
   <div>
-    <div class="container">
-      {{ bookNum }}
-      <div class="content-box col-10 m-auto">
+    <div>
+      <div class="content-box col-10 m-auto mt-4">
         <div class="sub">
           <div class="book-category mb-2">{{ bookData.categoryName }}</div>
           <div class="book-title">
@@ -22,18 +21,24 @@
         </div>
         <div class="used">
           <div class="used-title">중고 리스트</div>
-          <div class="used">
-            <div class="used-info">
-              <div class="used-img" :key="i" v-for="(used, i) in usedList">
-                <img v-bind:src="used.imgUrl" alt="" />
-                <div class="used-des">
-                  <div class="status mb-1">책 상태: {{ used.status }}</div>
-                  <div class="price mb-1">책 가격: {{ used.price }}</div>
-                  <div class="location mb-1">
-                    {{ used.location }}
-                  </div>
+
+          <div class="used-info">
+            <div class="used-img" :key="i" v-for="(used, i) in usedList">
+              <!-- <img v-bind:src="used.imgUrl" alt="" />
+              <div class="used-des">
+                <div class="status mb-1">책 상태: {{ used.status }}</div>
+                <div class="price mb-1">책 가격: {{ used.price }}</div>
+                <div class="location mb-1">
+                  {{ used.location }}
                 </div>
-              </div>
+              </div> -->
+              <UsedBook
+                class="me-4"
+                :imgPath="used.imgUrl"
+                bookType="used"
+                :status="used.status"
+                :price="used.price"
+                :location="used.location"></UsedBook>
             </div>
           </div>
         </div>
@@ -44,7 +49,9 @@
               <BookCard
                 class="me-4"
                 :imgPath="product.cover"
-                :title="product.title"></BookCard>
+                :title="product.title"
+                :author="product.author"
+                @click="moveToBookDetail(product.isbn13)"></BookCard>
               <!-- <img v-bind:src="product.imgUrl" alt="" />
               <div class="product-title">{{ product.title }}</div> -->
             </div>
@@ -55,12 +62,13 @@
   </div>
 </template>
 <script lang="ts">
+import UsedBook from "@/components/UsedBookList.vue";
 import BookCard from "@/components/BookCard.vue";
 import axios from "axios";
 import { useRoute } from "vue-router";
 
 export default {
-  components: { BookCard },
+  components: { BookCard, UsedBook },
   data() {
     return {
       bookData: {},
@@ -230,6 +238,15 @@ export default {
       console.log(result.item);
       this.bestSeller = result.item;
     },
+    moveToBookDetail(bookId: number) {
+      window.scrollTo(0, 0);
+      this.$router.push({
+        query: {
+          id: bookId,
+        },
+      });
+      this.getBookDetailData(bookId);
+    },
   },
 };
 </script>
@@ -237,8 +254,8 @@ export default {
 .content-box {
   height: 100%;
   display: grid;
-  grid-template-columns: 7fr 10fr;
-  grid-template-rows: 2fr 2fr 2fr 2fr;
+  grid-template-columns: 5fr 10fr;
+  /* grid-template-rows: 1fr 3fr 2fr 2fr; */
   grid-template-areas:
     "img sub"
     "img des"
@@ -285,6 +302,7 @@ export default {
 }
 .used {
   grid-area: used;
+  margin-top: 70px;
 }
 .used-title {
   font-size: 25px;
@@ -293,29 +311,21 @@ export default {
 }
 
 div .used-info {
-  background: #e3e3e3;
   width: 100%;
-  height: 270px;
   display: inline-flex;
   flex-wrap: nowrap;
-  overflow-x: auto;
 }
 .used-tt {
   font-size: 15px;
 }
 
-.used-img > img {
-  margin: 10px 30px;
-  width: 100px;
-  height: 150px;
-}
 .used-des {
   margin-left: 30px;
   line-height: 20px;
 }
 .best {
   grid-area: best;
-  height: 350px;
+  margin-top: 70px;
 }
 
 .bs-title {
@@ -328,11 +338,6 @@ div .used-info {
   height: 250px;
   display: inline-flex;
   flex-wrap: nowrap;
-}
-.product > img {
-  margin: 10px;
-  width: 200px;
-  height: 250px;
 }
 .product-title {
   text-align: center;
