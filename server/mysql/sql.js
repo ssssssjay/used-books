@@ -4,4 +4,5 @@ module.exports = {
   userDetail: `select * from user where user_id=?`,
   userUpdate: `update user set ? where user_id=?`,
   userDelete: `delete from user where user_id=?`,
+  insertUsedBook: `insert into product set ?`,
 };
