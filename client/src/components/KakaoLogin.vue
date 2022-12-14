@@ -2,13 +2,13 @@
   <div>
     <div
       class="fs-6 fw-bold"
-      v-show="this.userInfo.email == undefined"
+      v-show="this.userInfo.user_id == undefined"
       @click="kakaoLogin()">
       login
     </div>
     <div
       class="fs-6 fw-bold"
-      v-show="this.userInfo.email != undefined"
+      v-show="this.userInfo.user_id != undefined"
       @click="kakaoLogout()">
       logout
     </div>
@@ -63,7 +63,10 @@ export default {
           },
         ],
       });
-      this.$store.commit("setUser", data);
+      const result = await this.$get(
+        `http://localhost:3000/user?email=${data.email}`
+      );
+      this.$store.commit("setUser", result[0]);
     },
     kakaoLogout() {
       // window.Kakao.API.request({
