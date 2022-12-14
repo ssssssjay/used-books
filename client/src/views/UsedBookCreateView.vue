@@ -2,8 +2,7 @@
   <div class="container py-5">
     <form class="col-10 m-auto" @submit.prevent="registerUsedBookData">
       <label class="h5" for="main-search-inp">책 제목을 검색하세요</label>
-      <!-- TODO: 책검색해서 팔 책 셀렉할 수 있도록 -->
-      <BookSearchInput></BookSearchInput>
+      <BookSearchInput @send-book-id="getBookId"></BookSearchInput>
       <label for="" class="h5">판매를 진행하실 위치를 알려주세요</label>
       <div
         class="btn btn-secondary address-search ms-2"
@@ -124,7 +123,10 @@
       <p class="h5" for="">책의 사진을 올리시면 더욱 좋아요</p>
 
       <p class="h5" for="">가격을 입력해주세요</p>
-      <input type="number" v-model="usedBookDataForRegister.price" />
+      <input
+        type="number"
+        class="form-control"
+        v-model="usedBookDataForRegister.price" />
       <p class="h5" for="">상품의 소개 및 상태등을 입력해주세요</p>
       <textarea
         class="border"
@@ -139,11 +141,14 @@
 import BookSearchInput from "@/components/BookSearchInput.vue";
 import { ref } from "vue";
 import axios from "axios";
+import { useStore } from "vuex";
+import { useRouter } from "vue-router";
 
+const store = useStore();
 const usedBookDataForRegister = ref({
-  // TODO: seller_user_id, book_id, image_url_1
-  seller_user_id: 28,
-  book_id: 9791158392239,
+  // TODO: image_url_1
+  seller_user_id: store.state.userInfo.user_id,
+  book_id: "",
   location: "",
   coordination: "",
   total_status: null,
@@ -157,9 +162,22 @@ const usedBookDataForRegister = ref({
 
 const registerUsedBookData = async () => {
   // TODO: validation, error handle
-  const result = axios.post("http://localhost:3000/used-book/create", {
+  const result = await axios.post("http://localhost:3000/used-book/create", {
     param: usedBookDataForRegister.value,
   });
+  moveToProductDetail(result.data.insertId);
+  /**
+   * OkPacket {
+  fieldCount: 0,
+  affectedRows: 1,
+  insertId: 6,
+  serverStatus: 2,
+  warningCount: 2,
+  message: '',
+  protocol41: true,
+  changedRows: 0
+}
+   */
 };
 
 const changeDescriptionInput = (e) => {
@@ -219,6 +237,20 @@ const transLatLon = async (data: any) => {
   const stringifiedCooedination = JSON.stringify(coordination);
   usedBookDataForRegister.value.coordination = stringifiedCooedination;
   usedBookDataForRegister.value.location = addressName;
+};
+
+const getBookId = (id) => {
+  usedBookDataForRegister.value.book_id = id;
+};
+
+const router = useRouter();
+const moveToProductDetail = (productId) => {
+  router.push({
+    name: "UsedBook",
+    query: {
+      id: productId,
+    },
+  });
 };
 </script>
 
