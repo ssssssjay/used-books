@@ -13,24 +13,27 @@
           <i class="bi bi-search h5"></i>
         </button>
       </form>
-    </div>
-    <ul class="list-group position-absolute mt-1" v-if="bookSearchResults">
-      <p class="list-group-item list-group-item-action" v-if="false">error!</p>
-      <p
-        class="list-group-item list-group-item-action"
-        v-if="bookSearchResults.length === 0">
-        no matching!
-      </p>
-      <template v-else>
-        <li
+      <ul class="list-group position-absolute mt-1" v-if="bookSearchResults">
+        <!-- TODO: error handle -->
+        <p class="list-group-item list-group-item-action" v-if="false">
+          error!
+        </p>
+        <p
           class="list-group-item list-group-item-action"
-          v-for="book in bookSearchResults"
-          :key="book"
-          @click="moveToBookDetail(book.isbn13)">
-          {{ book.title }}
-        </li>
-      </template>
-    </ul>
+          v-if="bookSearchResults.length === 0">
+          no matching!
+        </p>
+        <template v-else>
+          <li
+            class="list-group-item list-group-item-action"
+            v-for="book in bookSearchResults"
+            :key="book"
+            @click="divertMoveOrSelect(book.isbn13)">
+            {{ book.title }}
+          </li>
+        </template>
+      </ul>
+    </div>
   </div>
 </template>
 
@@ -56,6 +59,8 @@ const searchBook = (e: Event) => {
       const result = await axios.get("http://localhost:3000/book/search", {
         params: {
           q: searchBookQuery.value,
+          // TODO: 라우트에 따른 반환갯수 조절
+          // cnt: 10,
         },
       });
       bookSearchResults.value = result.data.item;
@@ -65,16 +70,28 @@ const searchBook = (e: Event) => {
   }, 800);
 };
 
+const isCreateRoute = computed(() => route.path === "/used-book/create");
+
 const submitBookSearchInput = () => {
-  router.push({
-    name: "search",
-    query: {
-      q: searchBookQuery.value,
-    },
-  });
+  if (isCreateRoute.value) {
+    return;
+  }
+  if (validateBookSearchInput(searchBookQuery.value)) {
+    router.push({
+      name: "search",
+      query: {
+        q: searchBookQuery.value,
+      },
+    });
+  }
 };
 
-const moveToBookDetail = (bookid: any) => {
+const validateBookSearchInput = (input) => {
+  if (input.length === 0) return false;
+  return true;
+};
+
+const moveToBookDetail = (bookid) => {
   router.push({
     name: "book",
     query: {
@@ -84,11 +101,36 @@ const moveToBookDetail = (bookid: any) => {
 };
 
 const isHomeRoute = computed(() => route.path === "/");
+
+const body = document.getElementById("app");
+body?.addEventListener("click", (e) => {
+  if (!e.target.classList.contains("list-group-item")) {
+    bookSearchResults.value = null;
+  }
+});
+
+// 페이지이동인지 중고등록 때 선택인지 반환하는 함수
+const divertMoveOrSelect = (bookid) => {
+  if (isCreateRoute.value) {
+    selectBook(bookid);
+  } else if (!isCreateRoute.value) {
+    moveToBookDetail(bookid);
+  }
+};
+
+const emit = defineEmits(["sendBookId"]);
+const selectBook = (bookid) => {
+  emit("sendBookId", bookid);
+  bookSearchResults.value = null;
+};
 </script>
 
 <style scoped>
 .main-search-wrapper {
   position: relative;
+}
+.main-search-wrapper.header {
+  width: 180px;
 }
 .main-search-inp {
   width: 100%;
@@ -106,7 +148,7 @@ const isHomeRoute = computed(() => route.path === "/");
   outline: solid #457e2b;
 }
 .main-search-inp.header {
-  width: 180px;
+  /* width: 180px; */
   border-radius: 3px;
   border: 1px solid #bdbdbd;
   padding: 8px 12px;
@@ -116,7 +158,12 @@ const isHomeRoute = computed(() => route.path === "/");
 .main-search-btn {
   position: absolute;
   top: 50%;
-  right: 22px;
+  right: 3%;
   transform: translateY(-45%);
+}
+
+.list-group {
+  width: 100%;
+  z-index: 10;
 }
 </style>
