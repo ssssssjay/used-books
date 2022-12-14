@@ -4,7 +4,8 @@ const axios = require("axios");
 const mysql = require("../mysql");
 
 router.get("/", async (req, res) => {
-  const user = await mysql.query("user");
+  const userEmail = req.query.email;
+  const user = await mysql.query("getUser", userEmail);
   res.send(user);
 });
 
