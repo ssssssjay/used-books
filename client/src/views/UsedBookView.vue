@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <section class="mt-4 d-flex sect-brief">
+    <section class="mt-4 d-flex sect-brief col-10 m-auto">
       <div class="col-3">
         <img src="@/assets/book-image-sample.webp" alt="책이미지예시" />
       </div>
@@ -30,7 +30,7 @@
               <th scope="col" class="col">좋음</th>
             </tr>
           </thead>
-          <tbody class="table-group-divider">
+          <tbody class="">
             <tr class="">
               <th scope="row">책 상태</th>
               <td>O</td>
@@ -58,13 +58,16 @@
           </tbody>
         </table>
         <div class="float-end">
-          <button class="btn btn-success me-1">찜하기</button>
+          <button class="btn btn-outline-success me-1" @click="addLibrary">
+            <i v-show="!isLibraryCart" class="bi bi-bag-check"></i>
+            <i v-show="isLibraryCart" class="bi bi-bag-check-fill"></i>
+          </button>
           <button class="btn btn-success me-1">구매하기</button>
           <button class="btn btn-success">채팅하기</button>
         </div>
       </div>
     </section>
-    <main class="sect-detail">
+    <main class="sect-detail col-10 m-auto">
       <h1 class="h4">물품 소개글</h1>
       <hr class="mb-2 mt-0" />
       <div>
@@ -88,7 +91,24 @@
   </div>
 </template>
 
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { ref } from "vue";
+import axios from "axios";
+
+const isLibraryCart = ref(false);
+const addLibrary = () => {
+  isLibraryCart.value = !isLibraryCart.value;
+  // TODO: api로 등록 삭제 if문으로 --면 등록 --면 삭제 셋타임아웃으로 지연시키기
+};
+
+const getUsedBookData = async () => {
+  // TODO: id에 의거한 요청, 에러핸들링, 에외처리
+  const result = await axios.get("http://localhost:3000/used-book?id=5");
+  console.log(result.status);
+  console.log(result.data);
+};
+getUsedBookData();
+</script>
 
 <style scoped>
 img {
@@ -96,5 +116,10 @@ img {
 }
 .sect-brief {
   margin-bottom: 6vw;
+}
+
+.table-bordered th,
+.table-bordered td {
+  border: 1px solid #bdbdbd;
 }
 </style>
