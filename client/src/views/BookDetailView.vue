@@ -66,6 +66,7 @@ import UsedBook from "@/components/UsedBookList.vue";
 import BookCard from "@/components/BookCard.vue";
 import axios from "axios";
 import { useRoute } from "vue-router";
+import router from "@/router";
 
 export default {
   components: { BookCard, UsedBook },
@@ -206,16 +207,24 @@ export default {
       bestSeller: [],
       pageUrl: "",
       bookNum: "",
+      bookId: "",
     };
   },
   setup() {},
   created() {},
   mounted() {
     const route = useRoute();
-    const bookId = route.query.id;
-    this.getBookDetailData(bookId);
+    this.bookId = route.query.id;
+    this.getBookDetailData(this.bookId);
   },
   unmounted() {},
+  updated() {
+    const route = useRoute();
+    const newBookId = route.query.id;
+    if (this.bookId !== newBookId) {
+      this.$router.go(0);
+    }
+  },
   methods: {
     async getBookDetailData(bookId) {
       const result = await this.$get(
@@ -234,8 +243,8 @@ export default {
           },
         })
         .then((res) => res.data);
-      console.log(result);
-      console.log(result.item);
+      // console.log(result);
+      // console.log(result.item);
       this.bestSeller = result.item;
     },
     moveToBookDetail(bookId: number) {

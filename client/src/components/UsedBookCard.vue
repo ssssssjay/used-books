@@ -31,10 +31,6 @@ img {
 }
 .card {
   cursor: pointer;
-  transition: all ease-in-out 0.1s;
-}
-.card:hover {
-  transform: translateY(-6px);
 }
 .card-used .book-img-wrapper {
   width: 100px;

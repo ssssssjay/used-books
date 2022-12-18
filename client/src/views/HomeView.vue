@@ -8,26 +8,68 @@
     </section>
     <section class="sect-best-seller col-10">
       <p class="h2 mb-4">
-        <span class="text-success">컴퓨터/IT </span>분야에서 인기있는 책들이에요
+        <span class="text-success">{{ bestCategory.name }} </span>&nbsp;분야에서
+        인기있는 책들이에요
       </p>
       <ul class="d-flex flex-wrap mb-4">
         <li v-for="(code, name) in BOOK_CODE" :key="code">
-          <button class="btn-category" @click="selectCategory(code)">
+          <button
+            class="btn-category"
+            :class="{ active: bestCategory.code === code }"
+            @click="selectCategory(code, name)">
             {{ name }}
           </button>
         </li>
       </ul>
 
-      <ol class="d-flex">
-        <li v-for="item in bestSellerList" :key="item.isbn" class="">
-          <BookCard
-            :category="item.categoryName"
-            :imgPath="item.cover"
-            :title="item.title"
-            :author="item.author"
-            @click="moveToBookDetail(item.isbn13)"></BookCard>
-        </li>
-      </ol>
+      <div class="sect-best-carousel-1">
+        <button
+          @click="carousel('right')"
+          class="btn-carousel btn-carousel-left">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="16"
+            height="16"
+            fill="currentColor"
+            class="bi bi-chevron-left"
+            viewBox="0 0 16 16">
+            <path
+              fill-rule="evenodd"
+              d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z" />
+          </svg>
+        </button>
+        <button
+          @click="carousel('left')"
+          class="btn-carousel btn-carousel-right">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="16"
+            height="16"
+            fill="currentColor"
+            class="bi bi-chevron-right"
+            viewBox="0 0 16 16">
+            <path
+              fill-rule="evenodd"
+              d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z" />
+          </svg>
+        </button>
+        <div class="sect-best-carousel">
+          <ol class="d-flex carousel" ref="test">
+            <li
+              v-for="item in bestSellerList"
+              :key="item.isbn"
+              ref="carousel-section"
+              class="">
+              <BookCard
+                :category="item.categoryName"
+                :imgPath="item.cover"
+                :title="item.title"
+                :author="item.author"
+                @click="moveToBookDetail(item.isbn13)"></BookCard>
+            </li>
+          </ol>
+        </div>
+      </div>
     </section>
     <section class="sect-around col-8">
       <p class="h2 text-center">내 주변에는 이런 책들이 있어요</p>
@@ -53,6 +95,7 @@ import { BOOK_CODE } from "@/store/BookCode";
 
 const router = useRouter();
 
+const bestCategory = ref({ code: 351, name: "컴퓨터" });
 const bestSellerList = ref([] as any);
 
 const getBestSeller = async (categoryId: number) => {
@@ -63,15 +106,15 @@ const getBestSeller = async (categoryId: number) => {
       },
     })
     .then((res) => res.data);
-  console.log(result);
-  console.log(result.item);
   bestSellerList.value = result.item;
 };
 
-getBestSeller(0);
+getBestSeller(bestCategory.value.code);
 
-const selectCategory = (categoryId: number) => {
-  getBestSeller(categoryId);
+const selectCategory = (categoryId: number, name: string) => {
+  bestCategory.value.code = categoryId;
+  bestCategory.value.name = name;
+  getBestSeller(bestCategory.value.code);
 };
 
 const moveToBookDetail = (bookid: any) => {
@@ -82,6 +125,18 @@ const moveToBookDetail = (bookid: any) => {
       id: bookid,
     },
   });
+};
+
+const test = ref(null);
+const carousel = (dir) => {
+  // %로 이동하는 방법은 없나?
+  if (dir === "left") {
+    test.value.style = `transform: translateX(${
+      -test.value.offsetWidth - 20
+    }px)`;
+  } else {
+    test.value.style = `transform: translateX(${0}px)`;
+  }
 };
 </script>
 <style scoped>
@@ -100,7 +155,6 @@ const moveToBookDetail = (bookid: any) => {
 .sect-best-seller {
   padding-block: 36px;
   margin: 0 auto 24px;
-  border: 1px solid dodgerblue;
 }
 .btn-category {
   border: 1px solid #222222;
@@ -126,10 +180,38 @@ const moveToBookDetail = (bookid: any) => {
   border-color: #000000;
   transform: scale(0.96);
 }
-.btn-category:hover {
+.btn-category:hover,
+.btn-category.active {
   border: 1px solid #457e2b;
   background-color: #457e2b;
   color: #fff;
+}
+.sect-best-carousel-1 {
+  position: relative;
+}
+
+.sect-best-carousel {
+  overflow-x: hidden;
+}
+.btn-carousel {
+  position: absolute;
+  top: 50%;
+  z-index: 10;
+  width: 2rem;
+  height: 2rem;
+  background-color: #ffffff;
+  border: 1px solid rgb(109, 109, 109);
+  border-radius: 50%;
+}
+.btn-carousel-left {
+  left: -1rem;
+}
+.btn-carousel-right {
+  right: -1rem;
+}
+
+.carousel {
+  transition: all 0.4s ease-in-out;
 }
 /* 내 주변 중고도서 영역 */
 .sect-around {
