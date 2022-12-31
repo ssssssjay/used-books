@@ -5,11 +5,12 @@ import VueCookies from "vue-cookies";
 export default createStore({
   state: {
     userInfo: {},
+    likeUsedBookList: [],
   },
   modules: {},
   plugins: [
     persistedstate({
-      paths: ["userInfo"],
+      paths: ["userInfo", "likeUsedBookList"],
     }),
   ],
   mutations: {
@@ -24,6 +25,16 @@ export default createStore({
     logout(state) {
       state.userInfo = {};
       VueCookies.remove("userInfo");
+    },
+    setLikeUsedBookList(state, likeUsedBookList) {
+      state.likeUsedBookList = likeUsedBookList;
+    },
+    addLikeUsedBookList(state, usedBookId) {
+      state.likeUsedBookList.push(usedBookId);
+    },
+    deleteLikeUsedBookList(state, usedBookId) {
+      const idx = state.likeUsedBookList.indexOf(usedBookId);
+      state.likeUsedBookList.splice(idx, 1);
     },
   },
 });
