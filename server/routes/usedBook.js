@@ -5,9 +5,12 @@ const mysql = require("../mysql");
 
 router.get("/", async (req, res) => {
   try {
-    const productId = req.query.id; // ?=2
+    const productId = req.query.id;
     const result = await mysql.query("getUsedBook", [productId]);
-    res.send(result);
+    const [{ user_nickname }] = await mysql.query("getUserNickname", [
+      result[0].seller_user_id,
+    ]);
+    res.send({ ...result, user_nickname });
   } catch (error) {
     console.log(error);
     res.send(error);
