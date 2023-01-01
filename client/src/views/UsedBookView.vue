@@ -10,16 +10,18 @@
         <div class="mb-2">{{ bookData.author }}</div>
         <div class="mb-4">{{ bookData.publisher }}</div>
         <p class="fs-5 mb-4">
-          <span class="text-success">{{ usedBookData.seller_user_id }}</span
+          <span class="text-success">{{
+            usedBookData.seller_user_nickname
+          }}</span
           >님이 <span class="text-success"> {{ usedBookData.location }}</span
           >에서 판매중이에요
         </p>
         <hr />
-        <dl class="d-flex flex-wrap col-5">
-          <dt class="col-6 fw-bold">정가</dt>
-          <dd class="">{{ bookData.priceStandard }}원</dd>
-          <dt class="col-6 fw-bold">중고판매가</dt>
-          <dd class="">{{ usedBookData.price }}원</dd>
+        <dl class="d-flex flex-wrap col-6">
+          <dt class="col-6 text-center fw-bold">정가</dt>
+          <dd class="col-6 text-center">{{ bookData.priceStandard }}원</dd>
+          <dt class="col-6 text-center fw-bold">중고판매가</dt>
+          <dd class="col-6 text-center">{{ usedBookData.price }}원</dd>
         </dl>
         <hr />
         <table class="table table-striped table-bordered text-center">
@@ -31,7 +33,6 @@
               <th scope="col" class="col">좋음</th>
             </tr>
           </thead>
-          <!-- TODO: redering 어떻게? -->
           <tbody class="">
             <tr class="">
               <th scope="row">책 상태</th>
@@ -41,26 +42,28 @@
             </tr>
             <tr class="">
               <th scope="row">찢어짐</th>
-              <td></td>
-              <td>O</td>
-              <td></td>
+              <td>{{ usedBookData.tear_status === "L" ? "O" : "" }}</td>
+              <td>{{ usedBookData.tear_status === "M" ? "O" : "" }}</td>
+              <td>{{ usedBookData.tear_status === "U" ? "O" : "" }}</td>
             </tr>
             <tr class="">
               <th scope="row">오염 여부</th>
-              <td></td>
-              <td></td>
-              <td>O</td>
+              <td>{{ usedBookData.pollution_status === "L" ? "O" : "" }}</td>
+              <td>{{ usedBookData.pollution_status === "M" ? "O" : "" }}</td>
+              <td>{{ usedBookData.pollution_status === "U" ? "O" : "" }}</td>
             </tr>
             <tr class="">
               <th scope="row">낙서 여부</th>
-              <td></td>
-              <td>O</td>
-              <td></td>
+              <td>{{ usedBookData.doodle_status === "L" ? "O" : "" }}</td>
+              <td>{{ usedBookData.doodle_status === "M" ? "O" : "" }}</td>
+              <td>{{ usedBookData.doodle_status === "U" ? "O" : "" }}</td>
             </tr>
           </tbody>
         </table>
         <div class="float-end">
-          <button class="btn btn-outline-success me-1" @click="addLibrary">
+          <button
+            class="btn btn-outline-success me-1"
+            @click="divertAddOrDelete">
             <i v-show="!isLibraryCart" class="bi bi-bag-check"></i>
             <i v-show="isLibraryCart" class="bi bi-bag-check-fill"></i>
           </button>
@@ -90,14 +93,18 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, computed, onUpdated } from "vue";
 import axios from "axios";
 import { useRoute } from "vue-router";
+import { useStore } from "vuex";
+
+const store = useStore();
 
 const usedBookData = ref({
   product_id: 0,
   book_id: "",
   seller_user_id: 0,
+  seller_user_nickname: "",
   total_status: "",
   tear_status: "",
   pollution_status: "",
@@ -123,10 +130,41 @@ const bookData = ref({
   priceStandard: "",
 });
 
-const isLibraryCart = ref(false);
-const addLibrary = () => {
-  isLibraryCart.value = !isLibraryCart.value;
+const isLibraryCart = computed(() => {
+  return store.state.likeUsedBookList.includes(usedBookData.value.product_id);
+});
+
+const divertAddOrDelete = () => {
+  if (isLibraryCart.value === false) {
+    addLibrary();
+  } else {
+    deleteLibrary();
+  }
+};
+
+const addLibrary = async () => {
+  store.commit("addLikeUsedBookList", usedBookData.value.product_id);
   // TODO: api로 등록 삭제 if문으로 --면 등록 --면 삭제 셋타임아웃으로 지연시키기
+  const result = await axios.post("http://localhost:3000/library/create", {
+    param: {
+      book_id: usedBookData.value.book_id,
+      user_id: store.state.userInfo.user_id,
+      product_id: usedBookData.value.product_id,
+    },
+  });
+  alert("찜하기 완료");
+};
+
+const deleteLibrary = async () => {
+  store.commit("deleteLikeUsedBookList", usedBookData.value.product_id);
+  const result = await axios.delete("http://localhost:3000/library/delete", {
+    params: {
+      book_id: usedBookData.value.book_id,
+      user_id: store.state.userInfo.user_id,
+      product_id: usedBookData.value.product_id,
+    },
+  });
+  alert("찜하기 취소");
 };
 
 const route = useRoute();
@@ -138,8 +176,8 @@ const getUsedBookData = async () => {
       id: usedBookId,
     },
   });
-  console.log(...result.data);
   usedBookData.value = result.data[0];
+  usedBookData.value.seller_user_nickname = result.data.user_nickname;
   getBookData(result.data[0].book_id);
 };
 const getBookData = async (bookId: string) => {

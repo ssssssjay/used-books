@@ -66,7 +66,11 @@ export default {
       const result = await this.$get(
         `http://localhost:3000/user?email=${data.email}`
       );
-      this.$store.commit("setUser", result[0]);
+      this.$store.commit("setUser", result.user);
+      this.$store.commit(
+        "setLikeUsedBookList",
+        result.likeUsedBookList.map((obj) => obj.product_id)
+      );
     },
     kakaoLogout() {
       // window.Kakao.API.request({
