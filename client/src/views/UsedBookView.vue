@@ -68,7 +68,9 @@
             <i v-show="isLibraryCart" class="bi bi-bag-check-fill"></i>
           </button>
           <button class="btn btn-success me-1">구매하기</button>
-          <button class="btn btn-success">채팅하기</button>
+          <button class="btn btn-success" @click="goToChat(room_id)">
+            채팅하기
+          </button>
         </div>
       </div>
     </section>
@@ -96,10 +98,11 @@
 import { ref, computed, onUpdated } from "vue";
 import axios from "axios";
 import { useRoute } from "vue-router";
+import router from "@/router";
+import io from "socket.io-client";
 import { useStore } from "vuex";
-
 const store = useStore();
-
+const socket = io("http://localhost:3000");
 const usedBookData = ref({
   product_id: 0,
   book_id: "",
@@ -120,7 +123,7 @@ const usedBookData = ref({
   image_url_2: null,
   image_url_3: null,
 });
-
+let room_id = "";
 const bookData = ref({
   title: "",
   author: "",
@@ -179,6 +182,17 @@ const getUsedBookData = async () => {
   usedBookData.value = result.data[0];
   usedBookData.value.seller_user_nickname = result.data.user_nickname;
   getBookData(result.data[0].book_id);
+  room_id =
+    String(usedBookData.value.seller_user_id) +
+    String(store.state.userInfo.user_id);
+};
+const goToChat = (room_id: string) => {
+  router.push({
+    name: "chat",
+    query: {
+      id: room_id,
+    },
+  });
 };
 const getBookData = async (bookId: string) => {
   const result = await axios.get("http://localhost:3000/book/detail", {
