@@ -1,8 +1,12 @@
 const express = require("express");
+// const path = require("path");
+const socketio = require("socket.io");
 const session = require("express-session");
 const cors = require("cors");
 const app = express();
 const server = require("http").createServer(app);
+const now = new Date();
+let messages = [];
 require("dotenv").config({ path: `mysql/.env` });
 const multer = require("multer");
 const path = require("path");
@@ -86,10 +90,17 @@ app.use("/library", libraryRoute);
 app.use("/used-book", usedBookRoute);
 
 // =======================채팅=================
+const {
+  userJoin,
+  getCurrentUser,
+  getRoomUsers,
+  formatMessage,
+} = require("./routes/chat");
+
 const io = require("socket.io")(server, {
   pingTimeout: 1000,
   cors: {
-    origin: "http://localhost:8080",
+    origin: "http://localhost:5173",
     methods: ["GET", "POST"],
   },
 });
@@ -97,8 +108,19 @@ const io = require("socket.io")(server, {
 app.get("/", (req, res) => {
   res.send("Helloooooo");
 });
-
+const id = [];
 io.on("connection", (socket) => {
+  socket.on("message22", (msg) => {
+    // let message = {
+    //   message: msg.msg0,
+    //   user_id: msg.user,
+    // };
+    // console.log("=============");
+    // console.log(message);
+
+    console.log(msg);
+    io.emit("msg22", msg);
+  });
   // client로부터의 메시지가 수신되면
   socket.on("chat", (data) => {
     console.log(`Message from ${data.name}: ${data.msg}`);
@@ -114,7 +136,44 @@ io.on("connection", (socket) => {
     // 메시지를 전송한 client를 제외한 모든 client에게 메시지를 전송한다
     socket.broadcast.emit("chat", msg);
   });
+  // room 입장
+  let user = {};
+  socket.on("joinRoom", ({ user_id, user_nickname, room_id, prev }) => {
+    user = userJoin(socket.id, user_id, user_nickname, room_id);
+    let prevRoom = prev;
+    console.log("prevRoom" + prevRoom);
+    socket.leave(prevRoom);
+    socket.join(user.room);
 
+    console.log(`hello ${user.room}`);
+    // socket.on("chatMsg", (msg) => {
+    //   // const user = getCurrentUser(socket.id);
+    //   console.log(msg);
+    //   console.log(user);
+    //   io.to(user.room).emit(
+    //     "msg3",
+    //     formatMessage(user.user_id, user.user_nickname, msg)
+    //   );
+    // });
+  });
+  socket.on("autoJoin", (user_id, user_nickname, room) => {
+    user = userJoin(socket.id, user_id, user_nickname, room);
+    socket.join(user.room);
+    console.log(`autoJoin ${room}`);
+  });
+  socket.on("chatMsg", (msg) => {
+    // const user = getCurrentUser(socket.id);
+    console.log(msg);
+    console.log(user);
+    io.to(user.room).emit(
+      "msg3",
+      formatMessage(user.user_id, user.user_nickname, msg)
+    );
+  });
+  socket.on("leaveRoom", (room_id) => {
+    socket.leave(room_id);
+    console.log(`leave ${room_id}`);
+  });
   socket.on("disconnect", () => {
     console.log(`user disconnected: ${socket.name}`);
   });

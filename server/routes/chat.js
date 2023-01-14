@@ -1,8 +1,8 @@
 const users = [];
 
 // Join user to chat
-function userJoin(id, username, room) {
-  const user = { id, username, room };
+function userJoin(id, user_id, user_nickname, room) {
+  const user = { id, user_id, user_nickname, room };
   users.push(user);
   return user;
 }
@@ -18,10 +18,11 @@ function getRoomUsers(room) {
 }
 
 const moment = require("moment");
-function formatMessage(username, text) {
+function formatMessage(user_id, user_nickname, msg) {
   return {
-    username,
-    text,
+    user_id,
+    user_nickname,
+    msg,
     time: moment().format("h:mm a"),
   };
 }
