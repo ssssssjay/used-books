@@ -16,7 +16,18 @@ router.get("/", async (req, res) => {
     res.send(error);
   }
 });
-
+router.get("/bookDetail", async (req, res) => {
+  try {
+    console.log("test");
+    const book_Id = req.query.book_Id;
+    const result = await mysql.query("getUsedBook2", book_Id);
+    console.log(result);
+    res.send(result);
+  } catch (error) {
+    console.log(error);
+    res.send(error);
+  }
+});
 router.post("/create", async (req, res) => {
   try {
     const result = await mysql.query("insertUsedBook", [req.body.param]);

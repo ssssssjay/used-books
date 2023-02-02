@@ -83,19 +83,43 @@ const bookRoute = require("./routes/book");
 const userRoute = require("./routes/user");
 const libraryRoute = require("./routes/library");
 const usedBookRoute = require("./routes/usedBook");
+const chatRoute = require("./routes/chat");
 
 app.use("/book", bookRoute);
 app.use("/user", userRoute);
 app.use("/library", libraryRoute);
 app.use("/used-book", usedBookRoute);
+app.use("/chat", chatRoute);
 
 // =======================채팅=================
-const {
-  userJoin,
-  getCurrentUser,
-  getRoomUsers,
-  formatMessage,
-} = require("./routes/chat");
+const users = [];
+// Join user to chat
+function userJoin(id, user_id, user_nickname, room) {
+  const user = { id, user_id, user_nickname, room };
+  users.push(user);
+  return user;
+}
+
+// get current user
+function getCurrentUser(id) {
+  return users.find((user) => user.id === id);
+}
+
+// get room users
+function getRoomUsers(room) {
+  return users.filter((user) => user.room === room);
+}
+
+const moment = require("moment");
+
+function formatMessage(user_id, user_nickname, msg) {
+  return {
+    sender_id: user_id,
+    user_nickname,
+    msg,
+    time: moment().format(" hh:mm a"),
+  };
+}
 
 const io = require("socket.io")(server, {
   pingTimeout: 1000,
@@ -111,12 +135,12 @@ app.get("/", (req, res) => {
 const id = [];
 io.on("connection", (socket) => {
   socket.on("message22", (msg) => {
-    // let message = {
-    //   message: msg.msg0,
-    //   user_id: msg.user,
-    // };
-    // console.log("=============");
-    // console.log(message);
+    let message = {
+      message: msg.msg0,
+      user_id: msg.user,
+    };
+    console.log("=============");
+    console.log(message);
 
     console.log(msg);
     io.emit("msg22", msg);
@@ -146,15 +170,7 @@ io.on("connection", (socket) => {
     socket.join(user.room);
 
     console.log(`hello ${user.room}`);
-    // socket.on("chatMsg", (msg) => {
-    //   // const user = getCurrentUser(socket.id);
-    //   console.log(msg);
-    //   console.log(user);
-    //   io.to(user.room).emit(
-    //     "msg3",
-    //     formatMessage(user.user_id, user.user_nickname, msg)
-    //   );
-    // });
+ 
   });
   socket.on("autoJoin", (user_id, user_nickname, room) => {
     user = userJoin(socket.id, user_id, user_nickname, room);
@@ -163,8 +179,7 @@ io.on("connection", (socket) => {
   });
   socket.on("chatMsg", (msg) => {
     // const user = getCurrentUser(socket.id);
-    console.log(msg);
-    console.log(user);
+
     io.to(user.room).emit(
       "msg3",
       formatMessage(user.user_id, user.user_nickname, msg)
