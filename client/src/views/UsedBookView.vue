@@ -18,10 +18,10 @@
         </p>
         <hr />
         <dl class="d-flex flex-wrap col-6">
-          <dt class="col-6 text-center fw-bold">정가</dt>
-          <dd class="col-6 text-center">{{ bookData.priceStandard }}원</dd>
-          <dt class="col-6 text-center fw-bold">중고판매가</dt>
-          <dd class="col-6 text-center">{{ usedBookData.price }}원</dd>
+          <dt class="col-6 text-center my-1 fw-bold">정가</dt>
+          <dd class="col-6 text-center my-1">{{ bookData.priceStandard }}원</dd>
+          <dt class="col-6 text-center my-1 fw-bold">중고판매가</dt>
+          <dd class="col-6 text-center my-1">{{ usedBookData.price }}원</dd>
         </dl>
         <hr />
         <table class="table table-striped table-bordered text-center">
@@ -63,12 +63,23 @@
         <div class="float-end">
           <button
             class="btn btn-outline-success me-1"
-            @click="divertAddOrDelete">
+            @click="divertAddOrDelete"
+            v-bind:disabled="!store.state.userInfo.user_id">
             <i v-show="!isLibraryCart" class="bi bi-bag-check"></i>
             <i v-show="isLibraryCart" class="bi bi-bag-check-fill"></i>
           </button>
-          <button class="btn btn-success me-1">구매하기</button>
-          <button class="btn btn-success" @click="goToChat(room_id)">
+          <button
+            class="btn btn-success me-1"
+            v-bind:disabled="!store.state.userInfo.user_id">
+            구매하기
+          </button>
+          <button
+            class="btn btn-success"
+            @click="goToChat()"
+            v-bind:disabled="
+              usedBookData.seller_user_id == store.state.userInfo.user_id ||
+              !store.state.userInfo.user_id
+            ">
             채팅하기
           </button>
         </div>
@@ -95,14 +106,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onUpdated } from "vue";
+import { ref, computed } from "vue";
 import axios from "axios";
 import { useRoute } from "vue-router";
 import router from "@/router";
 import io from "socket.io-client";
 import { useStore } from "vuex";
 const store = useStore();
-const socket = io("http://localhost:3000");
 const usedBookData = ref({
   product_id: 0,
   book_id: "",
@@ -123,7 +133,9 @@ const usedBookData = ref({
   image_url_2: null,
   image_url_3: null,
 });
-let room_id = "";
+let user_list = "";
+let rev_user_list = "";
+let chat_id = ref("");
 const bookData = ref({
   title: "",
   author: "",
@@ -182,18 +194,55 @@ const getUsedBookData = async () => {
   usedBookData.value = result.data[0];
   usedBookData.value.seller_user_nickname = result.data.user_nickname;
   getBookData(result.data[0].book_id);
-  room_id =
-    String(usedBookData.value.seller_user_id) +
-    String(store.state.userInfo.user_id);
+  user_list = String([
+    usedBookData.value.seller_user_id,
+    store.state.userInfo.user_id,
+  ]);
+  rev_user_list = String(user_list.split(",").reverse());
 };
-const goToChat = (room_id: string) => {
+const goToChat = async () => {
+  if (chat_id.value === "") {
+    await dbRes();
+  }
+  await dbcheck();
+
+  // room_id 대신 chat_id로 변경
   router.push({
     name: "chat",
     query: {
-      id: room_id,
+      id: await chat_id.value,
     },
   });
 };
+const dbcheck = async () => {
+  const result2 = await axios.get("http://localhost:3000/chat", {
+    params: {
+      user_list,
+      rev_user_list,
+    },
+  });
+  console.log("=============chat_id=============");
+  // get chat_id 를 불러오는 요청을 해야함
+
+  if (result2.data.length > 0) {
+    chat_id.value = result2.data[0].chat_id;
+    console.log(chat_id.value);
+  }
+};
+const dbRes = async () => {
+  await axios.post("http://localhost:3000/chat/create", {
+    param: [
+      {
+        user_list,
+        product_id: usedBookData.value.product_id,
+      },
+      {
+        product_id: usedBookData.value.product_id,
+      },
+    ],
+  });
+};
+
 const getBookData = async (bookId: string) => {
   const result = await axios.get("http://localhost:3000/book/detail", {
     params: {
@@ -223,5 +272,7 @@ img {
 .table-bordered th,
 .table-bordered td {
   border: 1px solid #bdbdbd;
+}
+.btn btn-success.disable {
 }
 </style>
