@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from "vue-router";
-
+import store from "../store";
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -50,5 +50,18 @@ const router = createRouter({
     },
   ],
 });
-
+router.beforeEach((to, from, next) => {
+  console.log("to", to);
+  console.log("from", from);
+  console.log(store.state.userInfo);
+  console.log(store.state.isLogin);
+  if (
+    store.state.isLogin == true ||
+    to.fullPath == "/" ||
+    to.path == "/book" ||
+    to.path == "/used-book"
+  ) {
+    next();
+  }
+});
 export default router;
