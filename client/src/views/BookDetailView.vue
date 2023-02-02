@@ -20,10 +20,14 @@
           <div class="book-des" v-html="bookData.description"></div>
         </div>
         <div class="used">
-          <div class="used-title">중고 리스트</div>
-
-          <div class="used-info">
-            <div class="used-img" :key="i" v-for="(used, i) in usedList">
+          <div class="used-title my-4">중고 리스트</div>
+          <div v-show="usedList[0].length == 0">등록된 중고책이 없습니다</div>
+          <div class="used-info" v-show="usedList[0].length > 0">
+            <div
+              class="used-img"
+              :key="i"
+              v-for="(used, i) in usedList[0]"
+              @click="moveToUsedBook(used.product_id)">
               <!-- <img v-bind:src="used.imgUrl" alt="" />
               <div class="used-des">
                 <div class="status mb-1">책 상태: {{ used.status }}</div>
@@ -34,9 +38,9 @@
               </div> -->
               <UsedBook
                 class="me-4"
-                :imgPath="used.imgUrl"
+                :imgPath="used.image_url_1"
                 bookType="used"
-                :status="used.status"
+                :status="used.total_status"
                 :price="used.price"
                 :location="used.location"></UsedBook>
             </div>
@@ -66,7 +70,6 @@ import UsedBook from "@/components/UsedBookList.vue";
 import BookCard from "@/components/BookCard.vue";
 import axios from "axios";
 import { useRoute } from "vue-router";
-import router from "@/router";
 
 export default {
   components: { BookCard, UsedBook },
@@ -216,6 +219,8 @@ export default {
     const route = useRoute();
     this.bookId = route.query.id;
     this.getBookDetailData(this.bookId);
+    console.log(this.bookId);
+    this.getUsedBook(this.bookId);
   },
   unmounted() {},
   updated() {
@@ -226,7 +231,7 @@ export default {
     }
   },
   methods: {
-    async getBookDetailData(bookId) {
+    async getBookDetailData(bookId: any) {
       const result = await this.$get(
         `http://localhost:3000/book/detail?id=${bookId}`
       );
@@ -255,6 +260,27 @@ export default {
         },
       });
       this.getBookDetailData(bookId);
+    },
+    moveToUsedBook(productId: any) {
+      window.scrollTo(0, 0);
+      this.$router.push({
+        name: "UsedBook",
+        query: {
+          id: productId,
+        },
+      });
+    },
+    async getUsedBook(book_Id: any) {
+      const result = await axios.get(
+        `http://localhost:3000/used-book/bookDetail`,
+        {
+          params: {
+            book_Id: book_Id,
+          },
+        }
+      );
+      this.usedList = [];
+      this.usedList.push(result.data);
     },
   },
 };
