@@ -67,6 +67,7 @@ export default {
         `http://localhost:3000/user?email=${data.email}`
       );
       this.$store.commit("setUser", result.user);
+      this.$store.commit("isLoginCk", true);
       this.$store.commit(
         "setLikeUsedBookList",
         result.likeUsedBookList.map((obj) => obj.product_id)
@@ -91,6 +92,7 @@ export default {
         window.Kakao.Auth.getAccessToken();
       });
       this.$store.commit("setUser", {});
+      this.$store.commit("logout", false);
     },
   },
 };
