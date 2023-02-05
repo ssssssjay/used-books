@@ -24,4 +24,11 @@ module.exports = {
   getChatContent: `select c.*,ct.msg,ct.sender_id,ct.time,u.user_nickname,u.user_image
   from chat c , chat_content ct, user u
   where c.chat_id = ct.chat_id and ct.sender_id = u.user_id and c.chat_id = ? order by ct.created_at `,
+  getUsedByBookId: `select * from product where book_id=?`,
+  getAllUsedBook: `SELECT product_id, book_id, seller_user_id, seller_user_nickname, price, location, coordination
+  FROM used_books.product
+  WHERE sold_out=0`,
+  insertBookLibrary: `insert into like_book set ?`,
+  deleteBookLibrary: `delete from like_book where book_id=? and user_id=?`,
+  getBookLibrary: `select book_id from like_book where user_id=?`,
 };
