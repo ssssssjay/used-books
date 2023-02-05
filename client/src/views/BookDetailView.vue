@@ -18,6 +18,12 @@
         </div>
         <div class="des">
           <div class="book-des" v-html="bookData.description"></div>
+          <button
+            class="btn btn-outline-success btn-add-library me-1"
+            @click="divertAddOrDelete">
+            <i v-show="!isLibraryCart" class="bi bi-bag-check"></i>
+            <i v-show="isLibraryCart" class="bi bi-bag-check-fill"></i>
+          </button>
         </div>
         <div class="used">
           <div class="used-title my-4">중고 리스트</div>
@@ -36,28 +42,39 @@
                   {{ used.location }}
                 </div>
               </div> -->
-              <UsedBook
-                class="me-4"
-                :imgPath="used.image_url_1"
-                bookType="used"
-                :status="used.total_status"
-                :price="used.price"
-                :location="used.location"></UsedBook>
+              <div class="used-title">중고 리스트</div>
+
+              <div class="used-info">
+                <div class="used-img" :key="i" v-for="(used, i) in usedList">
+                  <UsedBook
+                    class="me-4"
+                    :imgPath="used.image_url_1"
+                    bookType="used"
+                    :status="used.total_status"
+                    :price="used.price"
+                    :location="used.location"></UsedBook>
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
-        <div class="best">
-          <div class="bs-title">{{ bookData.categoryName }} 베스트 셀러</div>
-          <div class="img-list">
-            <div class="product" :key="i" v-for="(product, i) in bestSeller">
-              <BookCard
-                class="me-4"
-                :imgPath="product.cover"
-                :title="product.title"
-                :author="product.author"
-                @click="moveToBookDetail(product.isbn13)"></BookCard>
-              <!-- <img v-bind:src="product.imgUrl" alt="" />
+            <div class="best">
+              <div class="bs-title">
+                {{ bookData.categoryName }} 베스트 셀러
+              </div>
+              <div class="img-list">
+                <div
+                  class="product"
+                  :key="i"
+                  v-for="(product, i) in bestSeller">
+                  <BookCard
+                    class="me-4"
+                    :imgPath="product.cover"
+                    :title="product.title"
+                    :author="product.author"
+                    @click="moveToBookDetail(product.isbn13)"></BookCard>
+                  <!-- <img v-bind:src="product.imgUrl" alt="" />
               <div class="product-title">{{ product.title }}</div> -->
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -219,7 +236,7 @@ export default {
     const route = useRoute();
     this.bookId = route.query.id;
     this.getBookDetailData(this.bookId);
-    console.log(this.bookId);
+    // console.log(this.bookId);
     this.getUsedBook(this.bookId);
   },
   unmounted() {},
@@ -281,6 +298,57 @@ export default {
       );
       this.usedList = [];
       this.usedList.push(result.data);
+    },
+    // sungjae added
+    divertAddOrDelete() {
+      if (this.isLibraryCart === false) {
+        this.addLibrary();
+      } else {
+        this.deleteLibrary();
+      }
+    },
+    async addLibrary() {
+      const result = await axios.post(
+        "http://localhost:3000/library/createBook",
+        {
+          param: {
+            book_id: this.bookData.isbn13,
+            user_id: this.$store.state.userInfo.user_id,
+          },
+        }
+      );
+      if (result.status === 200) {
+        this.$store.commit("addLikeBookList", this.bookData);
+        alert("찜하기 완료");
+      }
+      if (result.status !== 200) {
+        alert("찜하기 실패!");
+      }
+    },
+    async deleteLibrary() {
+      const result = await axios.delete(
+        "http://localhost:3000/library/deleteBook",
+        {
+          params: {
+            book_id: this.bookData.isbn13,
+            user_id: this.$store.state.userInfo.user_id,
+          },
+        }
+      );
+      if (result.status === 200) {
+        this.$store.commit("deleteLikeBookList", this.bookData.isbn13);
+        alert("찜하기 취소");
+      }
+      if (result.status !== 200) {
+        console.log("찜하기 취소 실패!");
+      }
+    },
+  },
+  computed: {
+    isLibraryCart() {
+      return this.$store.state.likeBookList.some(
+        (book) => book.isbn13 === this.bookData.isbn13
+      );
     },
   },
 };
@@ -376,5 +444,14 @@ div .used-info {
 }
 .product-title {
   text-align: center;
+}
+.btn-add-library {
+  font-size: 18px;
+  height: 38px;
+}
+.btn-add-library:hover {
+  background-color: #fff;
+  color: #198754;
+  text-decoration: none;
 }
 </style>

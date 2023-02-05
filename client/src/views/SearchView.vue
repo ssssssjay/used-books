@@ -55,6 +55,7 @@ export default {
       page: 1,
       limit: 10,
       block: 10,
+      route: useRoute(),
     };
   },
   setup() {},
@@ -66,6 +67,17 @@ export default {
   },
   mounted() {},
   unmounted() {},
+  updated() {
+    const route = useRoute();
+    // console.log("update");
+    this.searchName = route.query.q;
+  },
+  watch: {
+    searchName(newVal, oldVal) {
+      // console.log(oldVal, " => ", newVal);
+      this.searchBook(newVal, this.sortType);
+    },
+  },
   methods: {
     async searchBook(query: string, sort: string) {
       const result = await axios.get("http://localhost:3000/book/search", {

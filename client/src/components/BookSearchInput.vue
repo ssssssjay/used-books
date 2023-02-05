@@ -13,6 +13,14 @@
           <i class="bi bi-search h5"></i>
         </button>
       </form>
+      <div v-if="selectBookData">
+        <BookCard
+          :category="selectBookData.categoryName"
+          :imgPath="selectBookData.cover"
+          :title="selectBookData.title"
+          :author="selectBookData.author"></BookCard>
+      </div>
+      <!-- 리스트가 보이는게 포커스 되었을때만 보이고, 서브밋 되면 블러(포커스아웃)처리 -->
       <ul class="list-group position-absolute mt-1" v-if="bookSearchResults">
         <!-- TODO: error handle -->
         <p class="list-group-item list-group-item-action" v-if="false">
@@ -38,6 +46,7 @@
 </template>
 
 <script setup lang="ts">
+import BookCard from "@/components/BookCard.vue";
 import { ref, computed } from "vue";
 import axios from "axios";
 import { useRouter, useRoute } from "vue-router";
@@ -67,7 +76,7 @@ const searchBook = (e: Event) => {
     } else {
       bookSearchResults.value = null;
     }
-  }, 800);
+  }, 500);
 };
 
 const isCreateRoute = computed(() => route.path === "/used-book/create");
@@ -83,6 +92,9 @@ const submitBookSearchInput = () => {
         q: searchBookQuery.value,
       },
     });
+    const inp = document.querySelector(".main-search-inp");
+    inp.blur();
+    searchBookQuery.value = "";
   }
 };
 
@@ -118,15 +130,23 @@ const divertMoveOrSelect = (bookid) => {
   }
 };
 
+const selectBookData = ref(null);
 const emit = defineEmits(["sendBookId"]);
-const selectBook = (bookid) => {
+const selectBook = async (bookid) => {
+  const result = await axios.get(
+    `http://localhost:3000/book/detail?id=${bookid}`
+  );
+  if (result.status === 200) {
+    selectBookData.value = result.data.item[0];
+    // searchBookQuery.value = searchBookData.value;
+  }
   emit("sendBookId", bookid);
   bookSearchResults.value = null;
 };
 </script>
 
 <style scoped>
-.main-search-wrapper {
+.main-search-wrapper form {
   position: relative;
 }
 .main-search-wrapper.header {

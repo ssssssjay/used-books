@@ -2,13 +2,13 @@
   <div class="container">
     <section class="mt-4 d-flex sect-brief col-10 m-auto">
       <div class="col-2 me-auto">
-        <img :src="bookData.cover" alt="책이미지예시" />
+        <img :src="usedBookData.cover" alt="책이미지예시" />
       </div>
       <div class="col-9">
-        <div class="text-muted mb-2">{{ bookData.categoryName }}</div>
-        <h3 class="h3">{{ bookData.title }}</h3>
-        <div class="mb-2">{{ bookData.author }}</div>
-        <div class="mb-4">{{ bookData.publisher }}</div>
+        <div class="text-muted mb-2">{{ usedBookData.categoryName }}</div>
+        <h3 class="h3">{{ usedBookData.title }}</h3>
+        <div class="mb-2">{{ usedBookData.author }}</div>
+        <div class="mb-4">{{ usedBookData.publisher }}</div>
         <p class="fs-5 mb-4">
           <span class="text-success">{{
             usedBookData.seller_user_nickname
@@ -23,6 +23,18 @@
           <dt class="col-6 text-center my-1 fw-bold">중고판매가</dt>
           <dd class="col-6 text-center my-1">{{ usedBookData.price }}원</dd>
         </dl>
+        <table class="table table-bordered text-center">
+          <tbody>
+            <tr scope="row">
+              <td>정가</td>
+              <td>{{ usedBookData.priceStandard }}원</td>
+            </tr>
+            <tr>
+              <td>중고판매가</td>
+              <td>{{ usedBookData.price }}원</td>
+            </tr>
+          </tbody>
+        </table>
         <hr />
         <table class="table table-striped table-bordered text-center">
           <thead>
@@ -60,9 +72,11 @@
             </tr>
           </tbody>
         </table>
-        <div class="float-end">
+        <div
+          v-if="store.state.userInfo.user_id !== usedBookData.seller_user_id"
+          class="float-end">
           <button
-            class="btn btn-outline-success me-1"
+            class="btn btn-outline-success btn-add-library me-1"
             @click="divertAddOrDelete"
             v-bind:disabled="!store.state.userInfo.user_id">
             <i v-show="!isLibraryCart" class="bi bi-bag-check"></i>
@@ -109,10 +123,14 @@
 import { ref, computed } from "vue";
 import axios from "axios";
 import { useRoute } from "vue-router";
+import { useStore } from "vuex";
 import router from "@/router";
 import io from "socket.io-client";
-import { useStore } from "vuex";
+
+const socket = io("http://localhost:3000");
 const store = useStore();
+const route = useRoute();
+
 const usedBookData = ref({
   product_id: 0,
   book_id: "",
@@ -144,9 +162,12 @@ const bookData = ref({
   publisher: "",
   priceStandard: "",
 });
+let room_id = "";
 
 const isLibraryCart = computed(() => {
-  return store.state.likeUsedBookList.includes(usedBookData.value.product_id);
+  return store.state.likeUsedBookList.some(
+    (uesdBook) => uesdBook.product_id === usedBookData.value.product_id
+  );
 });
 
 const divertAddOrDelete = () => {
@@ -158,31 +179,42 @@ const divertAddOrDelete = () => {
 };
 
 const addLibrary = async () => {
-  store.commit("addLikeUsedBookList", usedBookData.value.product_id);
-  // TODO: api로 등록 삭제 if문으로 --면 등록 --면 삭제 셋타임아웃으로 지연시키기
-  const result = await axios.post("http://localhost:3000/library/create", {
+  const result = await axios.post("http://localhost:3000/library/createUsed", {
     param: {
       book_id: usedBookData.value.book_id,
       user_id: store.state.userInfo.user_id,
       product_id: usedBookData.value.product_id,
     },
   });
-  alert("찜하기 완료");
+  if (result.status === 200) {
+    store.commit("addLikeUsedBookList", usedBookData.value);
+    alert("찜하기 완료");
+  }
+  if (result.status !== 200) {
+    alert("찜하기 실패!");
+  }
 };
 
 const deleteLibrary = async () => {
-  store.commit("deleteLikeUsedBookList", usedBookData.value.product_id);
-  const result = await axios.delete("http://localhost:3000/library/delete", {
-    params: {
-      book_id: usedBookData.value.book_id,
-      user_id: store.state.userInfo.user_id,
-      product_id: usedBookData.value.product_id,
-    },
-  });
-  alert("찜하기 취소");
+  const result = await axios.delete(
+    "http://localhost:3000/library/deleteUsed",
+    {
+      params: {
+        book_id: usedBookData.value.book_id,
+        user_id: store.state.userInfo.user_id,
+        product_id: usedBookData.value.product_id,
+      },
+    }
+  );
+  if (result.status === 200) {
+    store.commit("deleteLikeUsedBookList", usedBookData.value.product_id);
+    alert("찜하기 취소");
+  }
+  if (result.status !== 200) {
+    console.log("찜하기 취소 실패!");
+  }
 };
 
-const route = useRoute();
 const usedBookId = route.query.id;
 const getUsedBookData = async () => {
   // TODO: id에 의거한 요청, 에러핸들링, 에외처리
@@ -192,13 +224,19 @@ const getUsedBookData = async () => {
     },
   });
   usedBookData.value = result.data[0];
-  usedBookData.value.seller_user_nickname = result.data.user_nickname;
   getBookData(result.data[0].book_id);
   user_list = String([
     usedBookData.value.seller_user_id,
     store.state.userInfo.user_id,
   ]);
   rev_user_list = String(user_list.split(",").reverse());
+  if (result.status === 200) {
+    usedBookData.value = result.data[0];
+    getBookData(result.data[0].book_id);
+    room_id =
+      String(usedBookData.value.seller_user_id) +
+      String(store.state.userInfo.user_id);
+  }
 };
 const goToChat = async () => {
   if (chat_id.value === "") {
@@ -249,19 +287,43 @@ const getBookData = async (bookId: string) => {
       id: bookId,
     },
   });
-  const { title, author, cover, categoryName, publisher, priceStandard } =
-    result.data.item[0];
-  bookData.value.title = title;
-  bookData.value.author = author;
-  bookData.value.cover = cover;
-  bookData.value.categoryName = categoryName;
-  bookData.value.publisher = publisher;
-  bookData.value.priceStandard = priceStandard;
+  if (result.status === 200) {
+    const {
+      link,
+      isbn,
+      itemId,
+      priceSales,
+      mallType,
+      stockStatus,
+      mileage,
+      salesPoint,
+      adult,
+      fixedPrice,
+      customerReviewRank,
+      subInfo,
+      ...bookData
+    } = result.data.item[0];
+    Object.assign(usedBookData.value, bookData);
+  }
+  if (result.status !== 200) {
+    alert("데이터를 못 불러옵니다....");
+  }
 };
+
+// 진입 시 중고책 데이터 불러오기
 getUsedBookData();
 </script>
 
 <style scoped>
+.btn-add-library {
+  font-size: 18px;
+  height: 38px;
+}
+.btn-add-library:hover {
+  background-color: #fff;
+  color: #198754;
+  text-decoration: none;
+}
 img {
   width: 100%;
 }

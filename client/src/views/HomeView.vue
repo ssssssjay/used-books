@@ -73,10 +73,19 @@
     </section>
     <section class="sect-around col-8">
       <p class="h2 text-center">내 주변에는 이런 책들이 있어요</p>
-      <KakaoMapComponent></KakaoMapComponent>
+      <KakaoMapComponent
+        v-if="usedBookList !== null"
+        :used-book-list="usedBookList"></KakaoMapComponent>
       <ul>
-        <li v-for="i in 5" :key="i">
-          <UsedBookCard></UsedBookCard>
+        <li v-for="usedBook in usedBookList" :key="usedBook.id">
+          <UsedBookCard
+            :title="usedBook.title"
+            :location="usedBook.location"
+            :seller_user_nickname="usedBook.seller_user_nickname"
+            :price="usedBook.price"
+            :category-name="usedBook.categoryName"
+            :cover="usedBook.cover"
+            @click="moveToUsedDetail(usedBook.product_id)"></UsedBookCard>
         </li>
       </ul>
     </section>
@@ -90,7 +99,7 @@ import BookSearchInput from "@/components/BookSearchInput.vue";
 import KakaoMapComponent from "@/components/KakaoMapComponent.vue";
 import { useRouter } from "vue-router";
 import axios from "axios";
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 import { BOOK_CODE } from "@/store/BookCode";
 
 const router = useRouter();
@@ -137,6 +146,27 @@ const carousel = (dir) => {
   } else {
     test.value.style = `transform: translateX(${0}px)`;
   }
+};
+
+const usedBookList = ref(null);
+
+const getAllUsedBook = async () => {
+  const result = await axios("http://localhost:3000/used-book/all");
+  const data = result.data;
+  // console.log(data);
+  usedBookList.value = data;
+};
+
+getAllUsedBook();
+
+const moveToUsedDetail = (usedId: any) => {
+  window.scrollTo(0, 0);
+  router.push({
+    name: "UsedBook",
+    query: {
+      id: usedId,
+    },
+  });
 };
 </script>
 <style scoped>
