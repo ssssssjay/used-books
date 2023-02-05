@@ -21,12 +21,6 @@ router.get("/best", async (req, res) => {
         },
       })
       .then((res) => res.data);
-
-    // if (result.errorCode) {
-    // throw new Error(result.errorMessage);
-    // }
-    // { errorCode: 4, errorMessage: 'API출력이 금지된 회원입니다.' }
-    console.log("success");
     res.send(result);
   } catch (error) {
     console.log(error);
@@ -57,8 +51,6 @@ router.get("/search", async (req, res) => {
         },
       })
       .then((res) => res.data);
-
-    console.log("success");
     res.send(result);
   } catch (error) {
     console.log(error);
@@ -71,7 +63,6 @@ router.get("/detail", async (req, res) => {
     // http://localhost:3000/book/detail?q=자바스크립트
 
     const itemId = req.query.id;
-    console.log(itemId);
     const result = await axios
       .get("http://www.aladin.co.kr/ttb/api/ItemLookUp.aspx", {
         params: {
@@ -84,8 +75,6 @@ router.get("/detail", async (req, res) => {
         },
       })
       .then((res) => res.data);
-
-    console.log("success");
     res.send(result);
   } catch (error) {
     console.log(error);
@@ -94,24 +83,3 @@ router.get("/detail", async (req, res) => {
 });
 
 module.exports = router;
-// result의 일부
-// status: 200,
-// statusText: 'OK',
-// headers: AxiosHeaders {
-//   'cache-control': 'private',
-//   'content-type': 'application/json; charset=utf-8',
-//   server: 'Microsoft-IIS/8.5',
-//   'x-aspnet-version': '2.0.50727',
-//   'set-cookie': 'AladdinUS=ZKrK%2boUzjBg%3d&USA=0; domain=aladin.co.kr; expires=Sun, 19-Oct-2042 03:56:55 GMT; path=/',
-//   'x-powered-by': 'ASP.NET',
-//   p3p: "CP='CAO PSA CONi OTR OUR DEM ONL'",
-//   date: 'Wed, 19 Oct 2022 03:56:54 GMT',
-//   connection: 'close',
-//   'content-length': '12122',
-//   [Symbol(defaults)]: null
-// },
-
-// http://localhost:3000/book/best/jay?test=test
-// console.log(req.path); // /best/jay
-// console.log(req.query); // { test: 'test' }
-// console.log(req.params); // { user: 'jay' }
