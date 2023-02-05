@@ -10,30 +10,32 @@
         <li class="me-4">
           <BookSearchInput v-if="!isHomeRoute"></BookSearchInput>
         </li>
-        <li class="me-4">
-          <RouterLink
-            to="/library"
-            class="fs-6 fw-bold"
-            :class="{ active: route.path === '/library' }"
-            >library</RouterLink
-          >
-        </li>
-        <li class="me-4">
-          <RouterLink
-            to="/chat"
-            class="fs-6 fw-bold"
-            :class="{ active: route.path === '/chat' }"
-            >chatting</RouterLink
-          >
-        </li>
-        <li class="me-4">
-          <RouterLink
-            to="/history"
-            class="fs-6 fw-bold"
-            :class="{ active: route.path === '/history' }"
-            >history</RouterLink
-          >
-        </li>
+        <div class="menu" v-show="this.$store.state.userInfo.user_id">
+          <li class="me-4">
+            <RouterLink
+              to="/library"
+              class="fs-6 fw-bold"
+              :class="{ active: route.path === '/library' }"
+              >library</RouterLink
+            >
+          </li>
+          <li class="me-4">
+            <RouterLink
+              to="/chat"
+              class="fs-6 fw-bold"
+              :class="{ active: route.path === '/chat' }"
+              >chatting</RouterLink
+            >
+          </li>
+          <li class="me-4">
+            <RouterLink
+              to="/history"
+              class="fs-6 fw-bold"
+              :class="{ active: route.path === '/history' }"
+              >history</RouterLink
+            >
+          </li>
+        </div>
         <li>
           <KakaoLogin></KakaoLogin>
         </li>
@@ -76,5 +78,8 @@ export default {
 <style scoped>
 .active {
   color: #457e2b;
+}
+.menu {
+  display: flex;
 }
 </style>

@@ -37,10 +37,7 @@ router.get("/best", async (req, res) => {
 router.get("/search", async (req, res) => {
   try {
     // http://localhost:3000/book/search?q=자바스크립트?s=SalesPoint
-    console.log(req.path); // /search
-    console.log(req.query); // { q: '자바스크립트' }
-    console.log(req.params); // { }
-    console.log(req.query.s);
+
     const searchQuery = req.query.q;
     const sortType = req.query.s;
     const countOfResults = req.query.cnt ? req.query.cnt : 5;
@@ -72,14 +69,12 @@ router.get("/search", async (req, res) => {
 router.get("/detail", async (req, res) => {
   try {
     // http://localhost:3000/book/detail?q=자바스크립트
-    console.log(req.path); // /detail
-    console.log(req.query); // { q: '자바스크립트' }
-    console.log(req.params); // { }
+
     const itemId = req.query.id;
     console.log(itemId);
     const result = await axios
       .get("http://www.aladin.co.kr/ttb/api/ItemLookUp.aspx", {
-        params: { 
+        params: {
           ttbkey: "ttbksj26190321932001",
           ItemId: itemId,
           ItemIdType: "ISBN13",

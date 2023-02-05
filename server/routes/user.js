@@ -3,6 +3,11 @@ const router = express.Router();
 const axios = require("axios");
 const mysql = require("../mysql");
 
+router.get("/data", async (req, res) => {
+  const userData = await mysql.query("user");
+  res.send(userData);
+});
+
 router.get("/", async (req, res) => {
   const userEmail = req.query.email;
   const user = await mysql.query("getUser", userEmail);

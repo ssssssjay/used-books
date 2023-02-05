@@ -6,13 +6,23 @@ export default createStore({
   state: {
     userInfo: {},
     likeUsedBookList: [],
+    isLogin: false,
   },
   modules: {},
   plugins: [
     persistedstate({
-      paths: ["userInfo", "likeUsedBookList"],
+      paths: ["userInfo", "likeUsedBookList", "isLogin"],
     }),
   ],
+  // getters: {
+  //   isLogin(state) {
+  //     if (state.userInfo != undefined) {
+  //       return true;
+  //     } else {
+  //       return false;
+  //     }
+  //   },
+  // },
   mutations: {
     // vue-cookies 를 설치하면 쿠키에 정보가 저장되는데 일정시간(시간설정가능)이 지나면 자동으로 삭제됨
     // 해당 기능으로 임시적으로 로그인, 로그아웃을 구현할수있음.
@@ -22,8 +32,13 @@ export default createStore({
       state.userInfo = userInfo;
       VueCookies.set("userInfo", userInfo, "8h");
     },
-    logout(state) {
+    isLoginCk(state, data) {
+      state.isLogin = data;
+      VueCookies.set("isLogin", data, "8h");
+    },
+    logout(state, data) {
       state.userInfo = {};
+      state.isLogin = data;
       VueCookies.remove("userInfo");
     },
     setLikeUsedBookList(state, likeUsedBookList) {
