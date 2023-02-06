@@ -68,10 +68,8 @@ export default {
       );
       this.$store.commit("setUser", result.user);
       this.$store.commit("isLoginCk", true);
-      this.$store.commit(
-        "setLikeUsedBookList",
-        result.likeUsedBookList.map((obj) => obj.product_id)
-      );
+      this.$store.commit("setLikeUsedBookList", result.likeUsedBookList); // [{},{},{}]
+      this.$store.commit("setLikeBookList", result.likeBookList); // [{},{},{}]
     },
     kakaoLogout() {
       // window.Kakao.API.request({
@@ -93,6 +91,8 @@ export default {
       });
       this.$store.commit("setUser", {});
       this.$store.commit("logout", false);
+      this.$store.commit("setLikeUsedBookList", []);
+      this.$store.commit("setLikeBookList", []);
     },
   },
 };

@@ -7,11 +7,12 @@ export default createStore({
     userInfo: {},
     likeUsedBookList: [],
     isLogin: false,
+    likeBookList: [],
   },
   modules: {},
   plugins: [
     persistedstate({
-      paths: ["userInfo", "likeUsedBookList", "isLogin"],
+      paths: ["userInfo", "likeUsedBookList", "likeBookList", "isLogin"],
     }),
   ],
   // getters: {
@@ -48,8 +49,23 @@ export default createStore({
       state.likeUsedBookList.push(usedBookId);
     },
     deleteLikeUsedBookList(state, usedBookId) {
-      const idx = state.likeUsedBookList.indexOf(usedBookId);
+      const idx = state.likeUsedBookList.findIndex(
+        (book) => book.product_id === usedBookId
+      );
       state.likeUsedBookList.splice(idx, 1);
+    },
+
+    setLikeBookList(state, likeBookList) {
+      state.likeBookList = likeBookList;
+    },
+    addLikeBookList(state, bookId) {
+      state.likeBookList.push(bookId);
+    },
+    deleteLikeBookList(state, bookId) {
+      const idx = state.likeBookList.findIndex(
+        (book) => book.isbn13 === bookId
+      );
+      state.likeBookList.splice(idx, 1);
     },
   },
 });

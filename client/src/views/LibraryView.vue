@@ -2,7 +2,8 @@
   <div class="container">
     <div class="m-auto p-0 col-10">
       <h1 class="fs-4 py-4 my-4">
-        <span class="fw-bold">jayss </span>님이 모아왔던 책들이에요
+        <span class="fw-bold">{{ store.state.userInfo.user_nickname }} </span
+        >님이 모아왔던 책들이에요
       </h1>
       <nav>
         <ul class="nav nav-tabs">
@@ -28,8 +29,13 @@
         v-show="typeOfBook.isBook"
         class="sect-book p-4 border border-top-0 rounded-bottom">
         <ol class="d-flex flex-wrap">
-          <li v-for="i in 10" :key="i">
-            <BookCard></BookCard>
+          <li v-for="likeBook in likeBookList" :key="likeBook.book_id">
+            <BookCard
+              :category="likeBook.categoryName"
+              :imgPath="likeBook.cover"
+              :title="likeBook.title"
+              :author="likeBook.author"
+              @click="routerMove(likeBook.isbn13)"></BookCard>
           </li>
         </ol>
       </section>
@@ -37,8 +43,13 @@
         v-show="typeOfBook.isUsedBook"
         class="sect-used-book p-4 border border-top-0 rounded-bottom">
         <ul>
-          <li v-for="i in 5" :key="i">
-            <UsedBookCard></UsedBookCard>
+          <li
+            class="card-used_book"
+            v-for="likeUsedBook in likeUsedBookList"
+            :key="likeUsedBook.product_id">
+            <UsedBookCard
+              v-bind="likeUsedBook"
+              @click="routerMove(likeUsedBook.product_id)"></UsedBookCard>
           </li>
         </ul>
       </section>
@@ -47,13 +58,23 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from "vue";
+import { ref, computed, onMounted } from "vue";
 import BookCard from "@/components/BookCard.vue";
 import UsedBookCard from "@/components/UsedBookCard.vue";
 import { useRoute, useRouter } from "vue-router";
+import { useStore } from "vuex";
 
 const route = useRoute();
 const router = useRouter();
+const store = useStore();
+
+const likeUsedBookList = ref([]);
+const likeBookList = ref([]);
+
+onMounted(() => {
+  likeUsedBookList.value = store.state.likeUsedBookList;
+  likeBookList.value = store.state.likeBookList;
+});
 
 const typeOfBook = ref({
   isBook: computed(() => {
@@ -68,13 +89,31 @@ const typeOfBook = ref({
 });
 
 const typeChange = (type: string) => {
-  console.log("type changed");
   router.push({
     name: "Library",
     query: {
       type,
     },
   });
+};
+
+const routerMove = (id) => {
+  if (typeOfBook.value.isUsedBook) {
+    router.push({
+      name: "UsedBook",
+      query: {
+        id: id,
+      },
+    });
+  }
+  if (typeOfBook.value.isBook) {
+    router.push({
+      name: "book",
+      query: {
+        id: id,
+      },
+    });
+  }
 };
 </script>
 
@@ -94,5 +133,11 @@ const typeChange = (type: string) => {
 .nav-link.active {
   font-weight: 600;
   color: black;
+}
+.card-used_book {
+  margin-bottom: 0.8rem;
+}
+.card-used_book:last-child {
+  margin-bottom: 0;
 }
 </style>

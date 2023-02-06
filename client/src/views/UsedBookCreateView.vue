@@ -148,6 +148,7 @@ const store = useStore();
 const usedBookDataForRegister = ref({
   // TODO: image_url_1
   seller_user_id: store.state.userInfo.user_id,
+  seller_user_nickname: store.state.userInfo.user_nickname,
   book_id: "",
   location: "",
   coordination: "",
@@ -166,18 +167,6 @@ const registerUsedBookData = async () => {
     param: usedBookDataForRegister.value,
   });
   moveToProductDetail(result.data.insertId);
-  /**
-   * OkPacket {
-  fieldCount: 0,
-  affectedRows: 1,
-  insertId: 6,
-  serverStatus: 2,
-  warningCount: 2,
-  message: '',
-  protocol41: true,
-  changedRows: 0
-}
-   */
 };
 
 const changeDescriptionInput = (e) => {
