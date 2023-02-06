@@ -15,6 +15,7 @@
       </form>
       <div v-if="selectBookData">
         <BookCard
+          class="mt-3"
           :category="selectBookData.categoryName"
           :imgPath="selectBookData.cover"
           :title="selectBookData.title"

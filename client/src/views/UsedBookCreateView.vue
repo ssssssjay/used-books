@@ -2,7 +2,7 @@
   <div class="container py-5">
     <form class="col-10 m-auto" @submit.prevent="registerUsedBookData">
       <label class="h5" for="main-search-inp">책 제목을 검색하세요</label>
-      <BookSearchInput @send-book-id="getBookId"></BookSearchInput>
+      <BookSearchInput class="mb-3" @send-book-id="getBookId"></BookSearchInput>
       <label for="" class="h5">판매를 진행하실 위치를 알려주세요</label>
       <div
         class="btn btn-secondary address-search ms-2"
