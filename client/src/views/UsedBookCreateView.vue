@@ -21,7 +21,7 @@
           v-model="address"
           disabled />
       </div>
-      <h3 class="h5">상품의 상태를 체크해주세요</h3>
+      <h3 class="h5 mb-4 mt-4">상품의 상태를 체크해주세요</h3>
       <!-- TODO: 선택된 상태에서 클릭시 해제가 안되는 경우 해결 -->
       <p>책의 전반적인 상태를 알려주세요</p>
       <div class="select">
@@ -120,7 +120,23 @@
           v-model="usedBookDataForRegister.doodle_status" />
         <label for="doodle-low-radio">좋지않아요</label>
       </div>
-      <p class="h5" for="">책의 사진을 올리시면 더욱 좋아요</p>
+      <div class="row mt-3">
+        <p class="h5 mb-3" for="">책의 사진을 올리시면 더욱 좋아요</p>
+        <input
+          id="image"
+          name="image"
+          type="file"
+          multiple
+          accept="image/*"
+          @change="uploadImage($event.target.files)" />
+      </div>
+      <img
+        v-for="(img, i) in imgSrc"
+        class="mb-4"
+        :key="i"
+        :src="img"
+        alt=""
+        style="width: 200px; height: auto" />
 
       <p class="h5" for="">가격을 입력해주세요</p>
       <input
@@ -145,6 +161,8 @@ import { useStore } from "vuex";
 import { useRouter } from "vue-router";
 
 const store = useStore();
+const imgSrc = ref([]);
+const resultData = ref([]);
 const usedBookDataForRegister = ref({
   // TODO: image_url_1
   seller_user_id: store.state.userInfo.user_id,
@@ -156,16 +174,18 @@ const usedBookDataForRegister = ref({
   tear_status: null,
   pollution_status: null,
   doodle_status: null,
-  image_url_1: "https://img.ridicdn.net/cover/1160000024/xxlarge?dpi=xxhdpi#1",
+  image_url_1: ref(""),
   price: null,
   description: "",
 });
 
 const registerUsedBookData = async () => {
+  console.log(usedBookDataForRegister.value);
   // TODO: validation, error handle
   const result = await axios.post("http://localhost:3000/used-book/create", {
     param: usedBookDataForRegister.value,
   });
+  console.log(result);
   moveToProductDetail(result.data.insertId);
 };
 
@@ -240,6 +260,45 @@ const moveToProductDetail = (productId) => {
       id: productId,
     },
   });
+};
+
+const upload = async (url, file) => {
+  const formData = new FormData();
+  formData.append("attachment", file);
+  return await axios
+    .post(url, formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    })
+    .catch((e) => {
+      console.log(e);
+    });
+};
+
+const uploadImage = async (files) => {
+  console.log(files);
+  console.log("files");
+  for (let i = 0; i < files.length; i++) {
+    const result = await upload(
+      "http://localhost:3000/api/upload/image",
+      files[i]
+    );
+    resultData.value.push(result.data);
+  }
+  for (let i = 0; i < resultData.value.length; i++) {
+    imgSrc.value.push(
+      `https://usedbook0.s3.ap-northeast-2.amazonaws.com/${resultData.value[i].key}`
+    );
+  }
+  usedBookDataForRegister.value.image_url_1 = String(imgSrc.value);
+
+  // const resultData = [];
+  // resultData.push(result);
+  // console.log(result);
+  // console.log(result.data.filename);
+  // imgSrc.value.push(
+  //   `http://localhost:3000/static/images/${result.data.filename}`
+  // );
+  console.log("result");
 };
 </script>
 
