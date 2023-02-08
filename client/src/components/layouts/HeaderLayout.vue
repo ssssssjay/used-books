@@ -10,7 +10,7 @@
         <li class="me-4">
           <BookSearchInput v-if="!isHomeRoute"></BookSearchInput>
         </li>
-        <div class="menu" v-show="this.$store.state.userInfo.user_id">
+        <div class="menu" v-show="this.$store.state.isLogin">
           <li class="me-4">
             <RouterLink
               to="/library"

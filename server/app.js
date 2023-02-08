@@ -12,6 +12,8 @@ const multer = require("multer");
 const path = require("path");
 const axios = require("axios");
 const mysql = require("./mysql");
+const fs = require("fs");
+app.use("/static/images", express.static("public/images"));
 app.use(
   express.json({
     limit: "50mb", // 최대 50메가
@@ -38,6 +40,21 @@ const corsOptions = {
 app.use(cors(corsOptions));
 
 // 이미지 업로드
+const AWS = require("aws-sdk");
+const multerS3 = require("multer-s3");
+
+AWS.config.update({
+  accessKeyId: process.env.S3_ACCESS_KEY_ID,
+  secretAccessKey: process.env.S3_SECRET_ACCESS_KEY,
+  region: "ap-northeast-2",
+});
+try {
+  fs.readdirSync("uploads");
+} catch (error) {
+  console.error("uploads 폴더가 없어 uploads 폴더를 생성합니다.");
+  fs.mkdirSync("uploads");
+}
+
 const imageStorage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, "public/images"); // 전송된 파일이 저장되는 디렉토리
@@ -47,7 +64,23 @@ const imageStorage = multer.diskStorage({
   },
 });
 
-const imageUpload = multer({ storage: imageStorage });
+// const imageUpload = multer({ storage: imageStorage });
+
+const imageUpload = multer({
+  storage: multerS3({
+    s3: new AWS.S3(),
+    bucket: "usedbook0",
+    acl: "public-read",
+    key(req, file, cb) {
+      cb(null, new Date().valueOf() + path.extname(file.originalname));
+    },
+  }),
+  limits: { fileSize: 5 * 1024 * 1024 },
+});
+
+app.post("/api/upload/image", imageUpload.single("attachment"), (req, res) => {
+  res.send(req.file);
+});
 
 app.get("/api/file/:filename", (req, res) => {
   const file = "./uploads/" + req.params.filename;
@@ -62,23 +95,6 @@ app.get("/api/file/:filename", (req, res) => {
     res.send("파일을 다운로드 하는 중 에러가 발생했습니다.");
   }
 });
-
-app.post(
-  "/api/upload/image",
-  imageUpload.single("attachment"),
-  async (req, res) => {
-    const fileInfo = {
-      product_id: parseInt(req.body.product_id),
-      originalname: req.file.originalname,
-      mimetype: req.file.mimetype,
-      filename: req.file.filename,
-      path: req.file.path,
-    };
-
-    res.send(fileInfo);
-  }
-);
-
 const bookRoute = require("./routes/book");
 const userRoute = require("./routes/user");
 const libraryRoute = require("./routes/library");
@@ -170,7 +186,6 @@ io.on("connection", (socket) => {
     socket.join(user.room);
 
     console.log(`hello ${user.room}`);
- 
   });
   socket.on("autoJoin", (user_id, user_nickname, room) => {
     user = userJoin(socket.id, user_id, user_nickname, room);

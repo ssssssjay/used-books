@@ -1,5 +1,5 @@
 import axios from "axios";
-
+axios.defaults.baseURL = "http://localhost:3000";
 export default {
   created() {},
   mounted() {},
@@ -26,6 +26,19 @@ export default {
       return await axios.delete(url).catch((e) => {
         console.log(e);
       });
+    },
+    async $upload(url, file) {
+      const formData = new FormData();
+      formData.append("attachment", file);
+      return (
+        await axios
+          .post(url, formData, {
+            headers: { "Content-Type": "multipart/form-data" },
+          })
+          .catch((e) => {
+            console.log(e);
+          })
+      ).data;
     },
   },
 };

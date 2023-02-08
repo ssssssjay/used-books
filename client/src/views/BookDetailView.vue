@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div>
+    <div class="container">
       <div class="content-box col-10 m-auto mt-4">
         <div class="sub">
           <div class="book-category mb-2">{{ bookData.categoryName }}</div>
@@ -19,7 +19,8 @@
         <div class="des">
           <div class="book-des" v-html="bookData.description"></div>
           <button
-            class="btn btn-outline-success btn-add-library me-1"
+            v-bind:disabled="!store.state.isLogin"
+            class="btn btn-outline-success btn-add-library me-1 library"
             @click="divertAddOrDelete">
             <i v-show="!isLibraryCart" class="bi bi-bag-check"></i>
             <i v-show="isLibraryCart" class="bi bi-bag-check-fill"></i>
@@ -27,54 +28,101 @@
         </div>
         <div class="used">
           <div class="used-title my-4">중고 리스트</div>
-          <div v-show="usedList[0].length == 0">등록된 중고책이 없습니다</div>
-          <div class="used-info" v-show="usedList[0].length > 0">
-            <div
-              class="used-img"
-              :key="i"
-              v-for="(used, i) in usedList[0]"
-              @click="moveToUsedBook(used.product_id)">
-              <!-- <img v-bind:src="used.imgUrl" alt="" />
-              <div class="used-des">
-                <div class="status mb-1">책 상태: {{ used.status }}</div>
-                <div class="price mb-1">책 가격: {{ used.price }}</div>
-                <div class="location mb-1">
-                  {{ used.location }}
-                </div>
-              </div> -->
-              <div class="used-title">중고 리스트</div>
-
-              <div class="used-info">
-                <div class="used-img" :key="i" v-for="(used, i) in usedList">
+          <div v-show="!haveUsedList">등록된 중고책이 없습니다</div>
+          <div class="sect-best-carousel-1" v-show="haveUsedList">
+            <button
+              @click="carousel('right')"
+              class="btn-carousel btn-carousel-left">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                fill="currentColor"
+                class="bi bi-chevron-left"
+                viewBox="0 0 16 16">
+                <path
+                  fill-rule="evenodd"
+                  d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z" />
+              </svg>
+            </button>
+            <button
+              @click="carousel('left')"
+              class="btn-carousel btn-carousel-right">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                fill="currentColor"
+                class="bi bi-chevron-right"
+                viewBox="0 0 16 16">
+                <path
+                  fill-rule="evenodd"
+                  d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z" />
+              </svg>
+            </button>
+            <div class="sect-best-carousel">
+              <ol class="d-flex carousel" ref="test">
+                <li
+                  class="used-img"
+                  :key="i"
+                  v-for="(used, i) in usedList[0]"
+                  @click="moveToUsedBook(used.product_id)">
                   <UsedBook
                     class="me-4"
-                    :imgPath="used.image_url_1"
+                    :imgPath="imgSrc[i][0]"
                     bookType="used"
                     :status="used.total_status"
                     :price="used.price"
                     :location="used.location"></UsedBook>
-                </div>
-              </div>
+                </li>
+              </ol>
             </div>
-            <div class="best">
-              <div class="bs-title">
-                {{ bookData.categoryName }} 베스트 셀러
-              </div>
-              <div class="img-list">
-                <div
-                  class="product"
-                  :key="i"
-                  v-for="(product, i) in bestSeller">
+          </div>
+        </div>
+        <div class="best">
+          <div class="bs-title">{{ bookData.categoryName }} 베스트 셀러</div>
+          <div class="sect-best-carousel-1">
+            <button
+              @click="carousel2('right')"
+              class="btn-carousel btn-carousel-left">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                fill="currentColor"
+                class="bi bi-chevron-left"
+                viewBox="0 0 16 16">
+                <path
+                  fill-rule="evenodd"
+                  d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z" />
+              </svg>
+            </button>
+            <button
+              @click="carousel2('left')"
+              class="btn-carousel btn-carousel-right">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                fill="currentColor"
+                class="bi bi-chevron-right"
+                viewBox="0 0 16 16">
+                <path
+                  fill-rule="evenodd"
+                  d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z" />
+              </svg>
+            </button>
+            <div class="sect-best-carousel">
+              <ol class="d-flex carousel mb-5" ref="test2">
+                <li class="product" :key="i" v-for="(product, i) in bestSeller">
                   <BookCard
                     class="me-4"
                     :imgPath="product.cover"
                     :title="product.title"
                     :author="product.author"
                     @click="moveToBookDetail(product.isbn13)"></BookCard>
-                  <!-- <img v-bind:src="product.imgUrl" alt="" />
-              <div class="product-title">{{ product.title }}</div> -->
-                </div>
-              </div>
+                </li>
+              </ol>
             </div>
           </div>
         </div>
@@ -87,150 +135,56 @@ import UsedBook from "@/components/UsedBookList.vue";
 import BookCard from "@/components/BookCard.vue";
 import axios from "axios";
 import { useRoute } from "vue-router";
-
+import { ref } from "vue";
+import { useStore } from "vuex";
 export default {
   components: { BookCard, UsedBook },
   data() {
     return {
       bookData: {},
       bookCategoryId: 0,
-      usedList: [
-        {
-          status: "상",
-          location: "경기도 성남시",
-          price: 20000,
-          nickname: "evelo",
-          imgUrl:
-            "https://user-images.githubusercontent.com/89081441/195911630-23a4ab4d-5314-4071-aeff-daad17b470f2.png",
-        },
-        {
-          status: "중",
-          location: "경기도 성남시",
-          price: 30000,
-          nickname: "evelo",
-          imgUrl:
-            "https://user-images.githubusercontent.com/89081441/195911630-23a4ab4d-5314-4071-aeff-daad17b470f2.png",
-        },
-        {
-          status: "하",
-          location: "경기도 성남시",
-          price: 40000,
-          nickname: "evelo",
-          imgUrl:
-            "https://user-images.githubusercontent.com/89081441/195911630-23a4ab4d-5314-4071-aeff-daad17b470f2.png",
-        },
-        {
-          status: "중",
-          location: "경기도 성남시",
-          price: 10000,
-          nickname: "evelo",
-          imgUrl:
-            "https://user-images.githubusercontent.com/89081441/195911630-23a4ab4d-5314-4071-aeff-daad17b470f2.png",
-        },
-        {
-          status: "상",
-          location: "경기도 성남시",
-          price: 20000,
-          nickname: "evelo",
-          imgUrl:
-            "https://user-images.githubusercontent.com/89081441/195911630-23a4ab4d-5314-4071-aeff-daad17b470f2.png",
-        },
-        {
-          status: "중",
-          location: "경기도 성남시",
-          price: 30000,
-          nickname: "evelo",
-          imgUrl:
-            "https://user-images.githubusercontent.com/89081441/195911630-23a4ab4d-5314-4071-aeff-daad17b470f2.png",
-        },
-        {
-          status: "하",
-          location: "경기도 성남시",
-          price: 40000,
-          nickname: "evelo",
-          imgUrl:
-            "https://user-images.githubusercontent.com/89081441/195911630-23a4ab4d-5314-4071-aeff-daad17b470f2.png",
-        },
-        {
-          status: "중",
-          location: "경기도 성남시",
-          price: 10000,
-          nickname: "evelo",
-          imgUrl:
-            "https://user-images.githubusercontent.com/89081441/195911630-23a4ab4d-5314-4071-aeff-daad17b470f2.png",
-        },
-        {
-          status: "상",
-          location: "경기도 성남시",
-          price: 20000,
-          nickname: "evelo",
-          imgUrl:
-            "https://user-images.githubusercontent.com/89081441/195911630-23a4ab4d-5314-4071-aeff-daad17b470f2.png",
-        },
-        {
-          status: "중",
-          location: "경기도 성남시",
-          price: 30000,
-          nickname: "evelo",
-          imgUrl:
-            "https://user-images.githubusercontent.com/89081441/195911630-23a4ab4d-5314-4071-aeff-daad17b470f2.png",
-        },
-        {
-          status: "하",
-          location: "경기도 성남시",
-          price: 40000,
-          nickname: "evelo",
-          imgUrl:
-            "https://user-images.githubusercontent.com/89081441/195911630-23a4ab4d-5314-4071-aeff-daad17b470f2.png",
-        },
-        {
-          status: "중",
-          location: "경기도 성남시",
-          price: 10000,
-          nickname: "evelo",
-          imgUrl:
-            "https://user-images.githubusercontent.com/89081441/195911630-23a4ab4d-5314-4071-aeff-daad17b470f2.png",
-        },
-        {
-          status: "상",
-          location: "경기도 성남시",
-          price: 20000,
-          nickname: "evelo",
-          imgUrl:
-            "https://user-images.githubusercontent.com/89081441/195911630-23a4ab4d-5314-4071-aeff-daad17b470f2.png",
-        },
-        {
-          status: "중",
-          location: "경기도 성남시",
-          price: 30000,
-          nickname: "evelo",
-          imgUrl:
-            "https://user-images.githubusercontent.com/89081441/195911630-23a4ab4d-5314-4071-aeff-daad17b470f2.png",
-        },
-        {
-          status: "하",
-          location: "경기도 성남시",
-          price: 40000,
-          nickname: "evelo",
-          imgUrl:
-            "https://user-images.githubusercontent.com/89081441/195911630-23a4ab4d-5314-4071-aeff-daad17b470f2.png",
-        },
-        {
-          status: "중",
-          location: "경기도 성남시",
-          price: 10000,
-          nickname: "evelo",
-          imgUrl:
-            "https://user-images.githubusercontent.com/89081441/195911630-23a4ab4d-5314-4071-aeff-daad17b470f2.png",
-        },
-      ],
       bestSeller: [],
+      usedList: [],
       pageUrl: "",
       bookNum: "",
       bookId: "",
+      haveUsedList: false,
     };
   },
-  setup() {},
+  setup() {
+    const store = useStore();
+    const imgSrc = ref([]);
+    const test = ref(null);
+    const test2 = ref(null);
+    const usedListMore5 = ref(false);
+    const carousel = (dir) => {
+      if (dir === "left" && usedListMore5.value == true) {
+        test.value.style = `transform: translateX(${
+          -test.value.offsetWidth - 20
+        }px)`;
+      } else if (usedListMore5.value == true && dir === "right") {
+        test.value.style = `transform: translateX(${0}px)`;
+      }
+    };
+    const carousel2 = (dir) => {
+      if (dir === "left") {
+        test2.value.style = `transform: translateX(${
+          -test2.value.offsetWidth - 65
+        }px)`;
+      } else {
+        test2.value.style = `transform: translateX(${0}px)`;
+      }
+    };
+    return {
+      carousel,
+      carousel2,
+      test,
+      test2,
+      usedListMore5,
+      imgSrc,
+      store,
+    };
+  },
   created() {},
   mounted() {
     const route = useRoute();
@@ -296,8 +250,17 @@ export default {
           },
         }
       );
-      this.usedList = [];
+      console.log(result.data);
+      for (let i = 0; i < result.data.length; i++) {
+        this.imgSrc.push(result.data[i].image_url_1.split(","));
+      }
       this.usedList.push(result.data);
+      if (result.data.length > 0) {
+        this.haveUsedList = true;
+        if (result.data.length > 5) {
+          this.usedListMore5 = true;
+        }
+      }
     },
     // sungjae added
     divertAddOrDelete() {
@@ -403,6 +366,9 @@ export default {
   overflow-y: auto;
   font-weight: 700;
 }
+.library {
+  float: right;
+}
 .used {
   grid-area: used;
   margin-top: 70px;
@@ -453,5 +419,32 @@ div .used-info {
   background-color: #fff;
   color: #198754;
   text-decoration: none;
+}
+.sect-best-carousel-1 {
+  position: relative;
+}
+
+.sect-best-carousel {
+  overflow-x: hidden;
+}
+.btn-carousel {
+  position: absolute;
+  top: 50%;
+  z-index: 10;
+  width: 2rem;
+  height: 2rem;
+  background-color: #ffffff;
+  border: 1px solid rgb(109, 109, 109);
+  border-radius: 50%;
+}
+.btn-carousel-left {
+  left: -1rem;
+}
+.btn-carousel-right {
+  right: -1rem;
+}
+
+.carousel {
+  transition: all 0.4s ease-in-out;
 }
 </style>

@@ -47,10 +47,9 @@ router.get("/all", async (req, res) => {
 });
 router.get("/bookDetail", async (req, res) => {
   try {
-    console.log("test");
     const book_Id = req.query.book_Id;
     const result = await mysql.query("getUsedBook2", book_Id);
-    console.log(result);
+    // console.log(result);
     res.send(result);
   } catch (error) {
     console.log(error);

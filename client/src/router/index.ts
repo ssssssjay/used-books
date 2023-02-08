@@ -51,15 +51,12 @@ const router = createRouter({
   ],
 });
 router.beforeEach((to, from, next) => {
-  // console.log("to", to);
-  // console.log("from", from);
-  // console.log(store.state.userInfo);
-  console.log(store.state.isLogin);
   if (
     store.state.isLogin == true ||
     to.fullPath == "/" ||
     to.path == "/book" ||
-    to.path == "/used-book"
+    to.path == "/used-book" ||
+    to.path == "/used-book/"
   ) {
     next();
   }

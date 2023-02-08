@@ -1,13 +1,13 @@
 <template>
   <div class="container">
     <section class="mt-4 d-flex sect-brief col-10 m-auto">
-      <div class="col-2 me-auto">
+      <div class="col-2 me-auto mt-5">
         <img :src="usedBookData.cover" alt="책이미지예시" />
       </div>
       <div class="col-9">
-        <div class="text-muted mb-2">{{ usedBookData.categoryName }}</div>
-        <h3 class="h3">{{ usedBookData.title }}</h3>
-        <div class="mb-2">{{ usedBookData.author }}</div>
+        <div class="text-muted mb-4">{{ usedBookData.categoryName }}</div>
+        <h3 class="h3 mb-4">{{ usedBookData.title }}</h3>
+        <div class="mb-3">{{ usedBookData.author }}</div>
         <div class="mb-4">{{ usedBookData.publisher }}</div>
         <p class="fs-5 mb-4">
           <span class="text-success">{{
@@ -78,13 +78,19 @@
           <button
             class="btn btn-outline-success btn-add-library me-1"
             @click="divertAddOrDelete"
-            v-bind:disabled="!store.state.userInfo.user_id">
+            v-bind:disabled="
+              usedBookData.seller_user_id == store.state.userInfo.user_id ||
+              !store.state.isLogin
+            ">
             <i v-show="!isLibraryCart" class="bi bi-bag-check"></i>
             <i v-show="isLibraryCart" class="bi bi-bag-check-fill"></i>
           </button>
           <button
             class="btn btn-success me-1"
-            v-bind:disabled="!store.state.userInfo.user_id">
+            v-bind:disabled="
+              usedBookData.seller_user_id == store.state.userInfo.user_id ||
+              !store.state.isLogin
+            ">
             구매하기
           </button>
           <button
@@ -92,26 +98,31 @@
             @click="goToChat()"
             v-bind:disabled="
               usedBookData.seller_user_id == store.state.userInfo.user_id ||
-              !store.state.userInfo.user_id
+              !store.state.isLogin
             ">
             채팅하기
           </button>
         </div>
+        <div
+          class="alert alert-primary no-login"
+          v-show="!store.state.isLogin"
+          role="alert">
+          해당 중고책을 문의, 구매하기를 원한다면
+          <a href="#" class="alert-link">로그인</a>을 해주세요
+        </div>
       </div>
     </section>
-    <main class="sect-detail col-10 m-auto">
+    <main class="sect-detail col-10 m-auto mb-4">
       <h1 class="h4">물품 소개글</h1>
       <hr class="mb-2 mt-0" />
       <div>
-        <div class="col-3 me-2 d-inline-block">
-          <img :src="usedBookData.image_url_1" alt="책이미지예시" />
-        </div>
-        <!-- TODO: v-if? -->
-        <div class="col-3 me-2 d-inline-block">
-          <img src="@/assets/book-image-sample.webp" alt="책이미지예시" />
-        </div>
-        <div class="col-3 d-inline-block">
-          <img src="@/assets/book-image-sample.webp" alt="책이미지예시" />
+        <div class="col-3 me-2 used-img">
+          <img
+            class=""
+            v-for="(img, i) in imgSrc"
+            :key="i"
+            :src="img"
+            alt="책이미지예시" />
         </div>
       </div>
       <span class="lh-base">{{ usedBookData.description }}</span>
@@ -151,6 +162,7 @@ const usedBookData = ref({
   image_url_2: null,
   image_url_3: null,
 });
+let imgSrc = ref(null);
 let user_list = "";
 let rev_user_list = "";
 let chat_id = ref("");
@@ -224,6 +236,7 @@ const getUsedBookData = async () => {
     },
   });
   usedBookData.value = result.data[0];
+  imgSrc.value = usedBookData.value.image_url_1.split(",");
   getBookData(result.data[0].book_id);
   user_list = String([
     usedBookData.value.seller_user_id,
@@ -336,5 +349,12 @@ img {
   border: 1px solid #bdbdbd;
 }
 .btn btn-success.disable {
+}
+.no-login {
+  float: right;
+  margin-right: 10px;
+}
+.used-img {
+  display: flex;
 }
 </style>

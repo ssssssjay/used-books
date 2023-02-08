@@ -2,13 +2,13 @@
   <div>
     <div
       class="fs-6 fw-bold"
-      v-show="this.userInfo.user_id == undefined"
+      v-show="!this.$store.state.isLogin"
       @click="kakaoLogin()">
       login
     </div>
     <div
       class="fs-6 fw-bold"
-      v-show="this.userInfo.user_id != undefined"
+      v-show="this.$store.state.isLogin"
       @click="kakaoLogout()">
       logout
     </div>
