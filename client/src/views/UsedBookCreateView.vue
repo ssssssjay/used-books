@@ -1,11 +1,12 @@
 <template>
   <div class="container py-5">
+    {{ usedBookDataForRegister.total_status }}
     <form class="col-10 m-auto" @submit.prevent="registerUsedBookData">
       <label class="h5" for="main-search-inp">책 제목을 검색하세요</label>
       <BookSearchInput class="mb-3" @send-book-id="getBookId"></BookSearchInput>
       <label for="" class="h5">판매를 진행하실 위치를 알려주세요</label>
       <div
-        class="btn btn-secondary address-search ms-2"
+        class="btn btn-secondary address-search ms-2 mb-2"
         @click="execDaumPostcode()">
         우편번호찾기
       </div>
@@ -121,14 +122,23 @@
         <label for="doodle-low-radio">좋지않아요</label>
       </div>
       <div class="row mt-3">
-        <p class="h5 mb-3" for="">책의 사진을 올리시면 더욱 좋아요</p>
+        <p class="h5 mb-3" for="">
+          책의 사진을 올리시면 더욱 좋아요 (최대 5장)
+        </p>
         <input
+          class="mb-4"
           id="image"
           name="image"
           type="file"
           multiple
           accept="image/*"
           @change="uploadImage($event.target.files)" />
+      </div>
+      <div
+        class="alert alert-secondary no-login mt-3"
+        role="alert"
+        v-show="overImg">
+        선택하신 이미지가 5개를 초과합니다
       </div>
       <img
         v-for="(img, i) in imgSrc"
@@ -143,12 +153,26 @@
         type="number"
         class="form-control"
         v-model="usedBookDataForRegister.price" />
-      <p class="h5" for="">상품의 소개 및 상태등을 입력해주세요</p>
+      <p class="h5 mt-3" for="">상품의 소개 및 상태등을 입력해주세요</p>
       <textarea
         class="border"
         :value="usedBookDataForRegister.description"
         @input="changeDescriptionInput"></textarea>
-      <button type="submit" class="btn btn-outline-success">등록하기</button>
+
+      <div class="btn-alert">
+        <button
+          type="submit"
+          class="btn btn-outline-success mt-2 res-btn"
+          :disabled="overImg || empty">
+          등록하기
+        </button>
+        <div
+          class="alert alert-secondary no-login mt-1 ms-2 empty-alert"
+          role="alert"
+          v-show="empty">
+          필수 요소 값을 입력해주세요
+        </div>
+      </div>
     </form>
   </div>
 </template>
@@ -167,8 +191,8 @@ const usedBookDataForRegister = ref({
   // TODO: image_url_1
   seller_user_id: store.state.userInfo.user_id,
   seller_user_nickname: store.state.userInfo.user_nickname,
-  book_id: "",
-  location: "",
+  book_id: null,
+  location: null,
   coordination: "",
   total_status: null,
   tear_status: null,
@@ -176,17 +200,30 @@ const usedBookDataForRegister = ref({
   doodle_status: null,
   image_url_1: ref(""),
   price: null,
-  description: "",
+  description: null,
 });
-
+const overImg = ref(false);
+const empty = ref(false);
 const registerUsedBookData = async () => {
-  console.log(usedBookDataForRegister.value);
-  // TODO: validation, error handle
-  const result = await axios.post("http://localhost:3000/used-book/create", {
-    param: usedBookDataForRegister.value,
-  });
-  console.log(result);
-  moveToProductDetail(result.data.insertId);
+  if (
+    usedBookDataForRegister.value.book_id != null &&
+    usedBookDataForRegister.value.total_status != null &&
+    usedBookDataForRegister.value.location != null &&
+    usedBookDataForRegister.value.tear_status != null &&
+    usedBookDataForRegister.value.pollution_status != null &&
+    usedBookDataForRegister.value.doodle_status != null &&
+    usedBookDataForRegister.value.price != null &&
+    usedBookDataForRegister.value.description != null &&
+    overImg.value == false
+  ) {
+    const result = await axios.post("http://localhost:3000/used-book/create", {
+      param: usedBookDataForRegister.value,
+    });
+    console.log(result);
+    moveToProductDetail(result.data.insertId);
+  } else {
+    empty.value = true;
+  }
 };
 
 const changeDescriptionInput = (e) => {
@@ -275,15 +312,23 @@ const upload = async (url, file) => {
 };
 
 const uploadImage = async (files) => {
+  resultData.value = [];
+  imgSrc.value = [];
   console.log(files);
   console.log("files");
-  for (let i = 0; i < files.length; i++) {
-    const result = await upload(
-      "http://localhost:3000/api/upload/image",
-      files[i]
-    );
-    resultData.value.push(result.data);
+  if (files.length < 6) {
+    for (let i = 0; i < files.length; i++) {
+      const result = await upload(
+        "http://localhost:3000/api/upload/image",
+        files[i]
+      );
+      resultData.value.push(result.data);
+    }
+  } else {
+    // 개수 초과했을때 처리
+    overImg.value = true;
   }
+
   for (let i = 0; i < resultData.value.length; i++) {
     imgSrc.value.push(
       `https://usedbook0.s3.ap-northeast-2.amazonaws.com/${resultData.value[i].key}`
@@ -341,5 +386,14 @@ textarea {
   resize: none;
   width: 100%;
   height: 6em;
+}
+.btn-alert {
+  display: flex;
+}
+.res-btn {
+  height: 100%;
+}
+.empty-alert {
+  height: 100%;
 }
 </style>
