@@ -24,6 +24,19 @@ const props: any = defineProps({
   nickname: String,
   bookType: String,
 });
+
+console.log(props.status);
+switch (props.status) {
+  case "U":
+    props.status == "상";
+    break;
+  case "M":
+    props.status == "중";
+    break;
+  case "L":
+    props.status == "하";
+    break;
+}
 </script>
 
 <style scoped>
