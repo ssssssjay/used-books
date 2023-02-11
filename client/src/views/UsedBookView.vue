@@ -1,10 +1,18 @@
 <template>
   <div class="container">
     <section class="mt-4 d-flex sect-brief col-10 m-auto">
-      <div class="col-2 me-auto mt-5">
-        <img :src="usedBookData.cover" alt="책이미지예시" />
+      <div class="col-5 me-auto">
+        <!-- <img :src="usedBookData.cover" alt="책이미지예시" /> -->
+        <img class="img-cover" :src="imgCover" alt="" />
+        <img
+          class="prev-img"
+          v-for="(img, i) in imgSrc"
+          :key="i"
+          :src="img"
+          alt=""
+          @click="changeCover(img)" />
       </div>
-      <div class="col-9">
+      <div class="col-8">
         <div class="text-muted mb-4">{{ usedBookData.categoryName }}</div>
         <h3 class="h3 mb-4">{{ usedBookData.title }}</h3>
         <div class="mb-3">{{ usedBookData.author }}</div>
@@ -17,12 +25,12 @@
           >에서 판매중이에요
         </p>
         <hr />
-        <dl class="d-flex flex-wrap col-6">
+        <!-- <dl class="d-flex flex-wrap col-6">
           <dt class="col-6 text-center my-1 fw-bold">정가</dt>
           <dd class="col-6 text-center my-1">{{ bookData.priceStandard }}원</dd>
           <dt class="col-6 text-center my-1 fw-bold">중고판매가</dt>
           <dd class="col-6 text-center my-1">{{ usedBookData.price }}원</dd>
-        </dl>
+        </dl> -->
         <table class="table table-bordered text-center">
           <tbody>
             <tr scope="row">
@@ -112,19 +120,9 @@
         </div>
       </div>
     </section>
-    <main class="sect-detail col-10 m-auto mb-4">
+    <main class="sect-detail col-10 m-auto mb-2 mt-4">
       <h1 class="h4">물품 소개글</h1>
       <hr class="mb-2 mt-0" />
-      <div>
-        <div class="col-3 me-2 used-img">
-          <img
-            class=""
-            v-for="(img, i) in imgSrc"
-            :key="i"
-            :src="img"
-            alt="책이미지예시" />
-        </div>
-      </div>
       <span class="lh-base">{{ usedBookData.description }}</span>
     </main>
   </div>
@@ -166,6 +164,7 @@ let imgSrc = ref(null);
 let user_list = "";
 let rev_user_list = "";
 let chat_id = ref("");
+let imgCover = ref("");
 const bookData = ref({
   title: "",
   author: "",
@@ -175,7 +174,6 @@ const bookData = ref({
   priceStandard: "",
 });
 let room_id = "";
-
 const isLibraryCart = computed(() => {
   return store.state.likeUsedBookList.some(
     (uesdBook) => uesdBook.product_id === usedBookData.value.product_id
@@ -237,6 +235,7 @@ const getUsedBookData = async () => {
   });
   usedBookData.value = result.data[0];
   imgSrc.value = usedBookData.value.image_url_1.split(",");
+  imgCover.value = imgSrc.value[0];
   getBookData(result.data[0].book_id);
   user_list = String([
     usedBookData.value.seller_user_id,
@@ -250,6 +249,9 @@ const getUsedBookData = async () => {
       String(usedBookData.value.seller_user_id) +
       String(store.state.userInfo.user_id);
   }
+};
+const changeCover = (data: any) => {
+  imgCover.value = data;
 };
 const goToChat = async () => {
   if (chat_id.value === "") {
@@ -356,5 +358,18 @@ img {
 }
 .used-img {
   display: flex;
+}
+.img-cover {
+  padding: 40px;
+  width: 400px;
+  height: 400px;
+}
+.prev-img {
+  width: 20%;
+  height: 20%;
+  opacity: 60%;
+}
+.prev-img:hover {
+  opacity: 100%;
 }
 </style>

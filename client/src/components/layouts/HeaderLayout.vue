@@ -20,21 +20,36 @@
             >
           </li>
           <li class="me-4">
+            <div class="dropdown" v-show="noChat">
+              <button
+                class="fs-6 fw-bold"
+                type="button"
+                data-bs-toggle="dropdown"
+                aria-expanded="false">
+                chatting
+              </button>
+              <ul class="dropdown-menu alert-msg mt-4" v-show="clickChat">
+                <li>
+                  <div class="">등록된 채팅이 없습니다</div>
+                </li>
+              </ul>
+            </div>
             <RouterLink
+              v-show="!noChat"
               to="/chat"
               class="fs-6 fw-bold"
               :class="{ active: route.path === '/chat' }"
               >chatting</RouterLink
             >
           </li>
-          <li class="me-4">
+          <!-- <li class="me-4">
             <RouterLink
               to="/history"
               class="fs-6 fw-bold"
               :class="{ active: route.path === '/history' }"
               >history</RouterLink
             >
-          </li>
+          </li> -->
         </div>
         <li>
           <KakaoLogin></KakaoLogin>
@@ -47,7 +62,7 @@
 <script setup>
 import KakaoLogin from "@/components/KakaoLogin.vue";
 import BookSearchInput from "@/components/BookSearchInput.vue";
-
+import { ref } from "vue";
 import { useRoute } from "vue-router";
 import { computed } from "vue";
 
@@ -58,16 +73,40 @@ const isHomeRoute = computed(
 </script>
 
 <script>
+import axios from "axios";
+
 export default {
   components: {},
   data() {
-    return {};
+    return {
+      noChat: true,
+      chatAlert: false,
+      clickChat: true,
+    };
   },
 
   created() {},
-  mounted() {},
+  mounted() {
+    this.getChat();
+  },
   unmounted() {},
-  methods: {},
+  methods: {
+    async getChat() {
+      const result = await axios.get(`http://localhost:3000/chat/list`, {
+        params: {
+          user_id: this.$store.state.userInfo.user_id,
+        },
+      });
+      if (result.data.length == 0) {
+        this.noChat = true;
+      } else {
+        this.noChat = false;
+      }
+    },
+    changeDropdown() {
+      this.clickChat = !this.clickChat;
+    },
+  },
   computed: {
     userInfo() {
       return this.$store.state.userInfo;
@@ -81,5 +120,11 @@ export default {
 }
 .menu {
   display: flex;
+}
+.alert-msg {
+  background: #167421;
+  color: white;
+  padding: 10px;
+  width: 200px;
 }
 </style>

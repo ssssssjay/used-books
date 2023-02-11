@@ -65,7 +65,7 @@
                 <li
                   class="used-img"
                   :key="i"
-                  v-for="(used, i) in usedList[0]"
+                  v-for="(used, i) in usedList"
                   @click="moveToUsedBook(used.product_id)">
                   <UsedBook
                     class="me-4"
@@ -144,7 +144,6 @@ export default {
       bookData: {},
       bookCategoryId: 0,
       bestSeller: [],
-      usedList: [],
       pageUrl: "",
       bookNum: "",
       bookId: "",
@@ -157,6 +156,7 @@ export default {
     const test = ref(null);
     const test2 = ref(null);
     const usedListMore5 = ref(false);
+    const usedList = ref([]);
     const carousel = (dir) => {
       if (dir === "left" && usedListMore5.value == true) {
         test.value.style = `transform: translateX(${
@@ -183,6 +183,7 @@ export default {
       usedListMore5,
       imgSrc,
       store,
+      usedList,
     };
   },
   created() {},
@@ -250,11 +251,13 @@ export default {
           },
         }
       );
-      console.log(result.data);
+
       for (let i = 0; i < result.data.length; i++) {
         this.imgSrc.push(result.data[i].image_url_1.split(","));
       }
+      console.log(result.data);
       this.usedList.push(result.data);
+      this.usedList = this.usedList[0];
       if (result.data.length > 0) {
         this.haveUsedList = true;
         if (result.data.length > 5) {
@@ -331,7 +334,6 @@ export default {
 
 .book-title {
   font-size: 30px;
-  font-weight: bold;
   margin-top: 15px;
   margin-bottom: 30px;
   line-height: 50px;

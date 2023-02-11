@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="container">
+    <div class="container mb-4">
       <div class="content-box" v-show="chatList.length > 0">
         <!-- 채팅리스트 -->
         <div class="aside">
@@ -65,9 +65,7 @@
               </div>
             </div>
           </div>
-
           <form class="input-form" @submit.prevent="sendMsg(this.newMsg)">
-            <!-- sendMsg(this.user.user_id, this.newMsg),  -->
             <input
               class="input-msg me-2"
               type="text"
@@ -79,13 +77,6 @@
             </button>
           </form>
         </div>
-      </div>
-      <div class="content-box2" v-show="chatList.length == 0">
-        <div class="empty-text">진행중인 채팅이 없습니다</div>
-        <img
-          class="empty-img"
-          src="https://user-images.githubusercontent.com/89081441/215955859-325d1b77-c8f4-4d5b-a26d-725b1ba00872.svg"
-          alt="" />
       </div>
     </div>
   </div>
@@ -331,6 +322,8 @@ export default {
 }
 .aside {
   grid-area: aside;
+  border: 1px solid black;
+  padding: 10px;
   border-radius: 4px;
 }
 .room-list {
@@ -355,6 +348,8 @@ export default {
   align-items: center;
 }
 .main {
+  border: 1px solid black;
+  padding: 10px;
   grid-area: main;
   border-radius: 4px;
   height: 100%;
