@@ -25,12 +25,6 @@
           >에서 판매중이에요
         </p>
         <hr />
-        <!-- <dl class="d-flex flex-wrap col-6">
-          <dt class="col-6 text-center my-1 fw-bold">정가</dt>
-          <dd class="col-6 text-center my-1">{{ bookData.priceStandard }}원</dd>
-          <dt class="col-6 text-center my-1 fw-bold">중고판매가</dt>
-          <dd class="col-6 text-center my-1">{{ usedBookData.price }}원</dd>
-        </dl> -->
         <table class="table table-bordered text-center">
           <tbody>
             <tr scope="row">
@@ -316,6 +310,7 @@ const getBookData = async (bookId: string) => {
       fixedPrice,
       customerReviewRank,
       subInfo,
+      description,
       ...bookData
     } = result.data.item[0];
     Object.assign(usedBookData.value, bookData);

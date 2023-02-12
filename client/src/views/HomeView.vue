@@ -75,9 +75,14 @@
       <p class="h2 text-center">내 주변에는 이런 책들이 있어요</p>
       <KakaoMapComponent
         v-if="usedBookList !== null"
-        :used-book-list="usedBookList"></KakaoMapComponent>
+        :used-book-list="usedBookList"
+        @emit-map-router="moveToUsedDetail"
+        @emit-map-render="renderNearby"></KakaoMapComponent>
       <ul>
-        <li v-for="usedBook in usedBookList" :key="usedBook.id">
+        <li
+          class="card-used_book"
+          v-for="usedBook in usedBookListRender"
+          :key="usedBook.id">
           <UsedBookCard
             :title="usedBook.title"
             :location="usedBook.location"
@@ -168,6 +173,12 @@ const moveToUsedDetail = (usedId: any) => {
     },
   });
 };
+
+const usedBookListRender = ref([]);
+const renderNearby = (param) => {
+  console.log("succeess", param);
+  usedBookListRender.value.push(param);
+};
 </script>
 <style scoped>
 .d-flex {
@@ -248,8 +259,13 @@ const moveToUsedDetail = (usedId: any) => {
   margin: 0 auto;
   padding-block: 36px;
 }
-.canvas {
-  height: 360px;
-  border: 1px solid black;
+.card-used_book {
+  margin-bottom: 0.8rem;
+}
+.card-used_book:first-child {
+  margin-top: 0.8rem;
+}
+.card-used_book:last-child {
+  margin-bottom: 0;
 }
 </style>

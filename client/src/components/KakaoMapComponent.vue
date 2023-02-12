@@ -7,21 +7,13 @@
 <script setup lang="ts">
 import { onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
-const router = useRouter();
-
-const moveToUsedDetail = (usedId: any) => {
-  window.scrollTo(0, 0);
-  router.push({
-    name: "UsedBook",
-    query: {
-      id: usedId,
-    },
-  });
-};
+const emit = defineEmits(["emitMapRouter", "emitMapRender"]);
 
 const props = defineProps({
   usedBookList: Array,
 });
+
+const router = useRouter();
 
 let map;
 
@@ -61,10 +53,43 @@ onMounted(() => {
           swLatlng.Ma <= lat &&
           lat <= neLatlng.Ma
         ) {
-          displayMarker(bookLocPosition, el.title);
+          // 마커를 생성합니다
+          var marker = new kakao.maps.Marker({
+            map: map, // 마커를 표시할 지도
+            position: bookLocPosition, // 마커의 위치
+            clickable: true,
+          });
+
+          // 마커에 표시할 인포윈도우를 생성합니다
+          var infowindow = new kakao.maps.InfoWindow({
+            content: `<div style='width: 250px;'>
+               <div class='info-title' id='info-title'>${el.title}</div>
+              </div>`,
+          });
+
+          // 마커에 mouseover 이벤트와 mouseout 이벤트를 등록합니다
+          // 이벤트 리스너로는 클로저를 만들어 등록합니다
+          // for문에서 클로저를 만들어 주지 않으면 마지막 마커에만 이벤트가 등록됩니다
+          kakao.maps.event.addListener(
+            marker,
+            "mouseover",
+            makeOverListener(map, marker, infowindow)
+          );
+          kakao.maps.event.addListener(
+            marker,
+            "mouseout",
+            makeOutListener(infowindow)
+          );
+          // 마커에 클릭이벤트를 등록합니다
+          kakao.maps.event.addListener(marker, "click", function () {
+            emit("emitMapRouter", el.product_id);
+          });
+          emit("emitMapRender", el);
+          // map.setZoomable(false);
+          // map.setDraggable(false);
         }
       });
-      displayMarker(locPosition, message);
+      // displayMarker(locPosition, message);
     });
   } else {
     // HTML5의 GeoLocation을 사용할 수 없을때 마커 표시 위치와 인포윈도우 내용을 설정합니다
@@ -94,14 +119,22 @@ onMounted(() => {
     // 인포윈도우를 마커위에 표시합니다
     infowindow.open(map, marker);
 
-    // 지도 중심좌표를 접속위치로 변경합니다
     map.setCenter(locPosition);
-    // map.setZoomable(false);
-    // map.setDraggable(false);
-    // 마커에 클릭이벤트를 등록합니다
-    kakao.maps.event.addListener(marker, "click", function () {
-      // console.log("aa");
-    });
+    map.setZoomable(false);
+    map.setDraggable(false);
+  }
+  // 인포윈도우를 표시하는 클로저를 만드는 함수입니다
+  function makeOverListener(map, marker, infowindow) {
+    return function () {
+      infowindow.open(map, marker);
+    };
+  }
+
+  // 인포윈도우를 닫는 클로저를 만드는 함수입니다
+  function makeOutListener(infowindow) {
+    return function () {
+      infowindow.close();
+    };
   }
 });
 </script>
@@ -110,5 +143,11 @@ onMounted(() => {
 .map {
   width: 100%;
   height: 50vh;
+}
+.wrap {
+  border-radius: 4px;
+}
+.info-title {
+  color: aqua;
 }
 </style>
