@@ -139,7 +139,7 @@ const selectBook = async (bookid) => {
   );
   if (result.status === 200) {
     selectBookData.value = result.data.item[0];
-    // searchBookQuery.value = searchBookData.value;
+    searchBookQuery.value = selectBookData.value.title;
   }
   emit("sendBookId", bookid);
   bookSearchResults.value = null;
