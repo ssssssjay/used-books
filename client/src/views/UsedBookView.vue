@@ -5,7 +5,7 @@
         <!-- <img :src="usedBookData.cover" alt="책이미지예시" /> -->
         <img class="img-cover" :src="imgCover" alt="" />
         <img
-          class="prev-img"
+          class="prev-img ms-2"
           v-for="(img, i) in imgSrc"
           :key="i"
           :src="img"
@@ -14,7 +14,17 @@
       </div>
       <div class="col-8">
         <div class="text-muted mb-4">{{ usedBookData.categoryName }}</div>
-        <h3 class="h3 mb-4">{{ usedBookData.title }}</h3>
+        <div class="book-name">
+          <h3 class="h3 mb-4">
+            {{ usedBookData.title }}
+            <button
+              class="go-detail"
+              @click="moveToBookDetail(usedBookData.book_id)">
+              책보러가기
+            </button>
+          </h3>
+        </div>
+
         <div class="mb-3">{{ usedBookData.author }}</div>
         <div class="mb-4">{{ usedBookData.publisher }}</div>
         <p class="fs-5 mb-4">
@@ -25,7 +35,7 @@
           >에서 판매중이에요
         </p>
         <hr />
-        <table class="table table-bordered text-center">
+        <table class="table table-bordered text-center mb-4">
           <tbody>
             <tr scope="row">
               <td>정가</td>
@@ -115,9 +125,9 @@
       </div>
     </section>
     <main class="sect-detail col-10 m-auto mb-2 mt-4">
-      <h1 class="h4">물품 소개글</h1>
-      <hr class="mb-2 mt-0" />
-      <span class="lh-base">{{ usedBookData.description }}</span>
+      <h1 class="h4 mb-4">물품 소개글</h1>
+      <hr class="mb-4" />
+      <span class="lh-base des">{{ usedBookData.description }}</span>
     </main>
   </div>
 </template>
@@ -173,6 +183,16 @@ const isLibraryCart = computed(() => {
     (uesdBook) => uesdBook.product_id === usedBookData.value.product_id
   );
 });
+const moveToBookDetail = (bookId: number) => {
+  window.scrollTo(0, 0);
+  router.push({
+    name: "book",
+    query: {
+      id: bookId,
+    },
+  });
+  // getBookDetailData(bookId);
+};
 
 const divertAddOrDelete = () => {
   if (isLibraryCart.value === false) {
@@ -357,14 +377,27 @@ img {
 .img-cover {
   padding: 40px;
   width: 400px;
-  height: 400px;
+  height: 450px;
+  border-radius: 50px;
 }
 .prev-img {
-  width: 20%;
+  width: 15%;
   height: 20%;
   opacity: 60%;
+  border-radius: 10px;
 }
 .prev-img:hover {
   opacity: 100%;
+}
+.book-name {
+  display: flex;
+}
+.go-detail {
+  font-size: 16px;
+  background: #167421;
+  color: white;
+}
+.des {
+  font-size: 20px;
 }
 </style>
