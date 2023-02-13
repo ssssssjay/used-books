@@ -4,7 +4,7 @@
 
 <div align="center">
 
-<img src="https://velog.velcdn.com/images/evelo/post/cba2a129-223e-4c32-8c63-91b3bfbd326f/image.gif" >
+<img src="https://user-images.githubusercontent.com/48425930/218381347-589b1f5a-fc4f-40da-b79d-9802f6152a61.gif" >
 
 <br/>
 
