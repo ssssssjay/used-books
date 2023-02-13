@@ -128,12 +128,13 @@ function getRoomUsers(room) {
 
 const moment = require("moment");
 
-function formatMessage(user_id, user_nickname, msg) {
+function formatMessage(user_id, user_nickname, msg, time, img) {
   return {
     sender_id: user_id,
     user_nickname,
     msg,
-    time: moment().format(" hh:mm a"),
+    time,
+    user_image: img,
   };
 }
 
@@ -177,27 +178,30 @@ io.on("connection", (socket) => {
     socket.broadcast.emit("chat", msg);
   });
   // room 입장
-  let user = {};
-  socket.on("joinRoom", ({ user_id, user_nickname, room_id, prev }) => {
-    user = userJoin(socket.id, user_id, user_nickname, room_id);
+  let user = [];
+  socket.on("joinRoom", ({ user_id, user_nickname, chat_id, prev }) => {
+    user = [];
+    user = userJoin(socket.id, user_id, user_nickname, chat_id);
     let prevRoom = prev;
-    console.log("prevRoom" + prevRoom);
+
     socket.leave(prevRoom);
     socket.join(user.room);
 
     console.log(`hello ${user.room}`);
   });
   socket.on("autoJoin", (user_id, user_nickname, room) => {
+    user = [];
     user = userJoin(socket.id, user_id, user_nickname, room);
+
     socket.join(user.room);
-    console.log(`autoJoin ${room}`);
+    console.log(`autoJoin ${user.room}`);
   });
-  socket.on("chatMsg", (msg) => {
+  socket.on("chatMsg", async (msg, time, img) => {
     // const user = getCurrentUser(socket.id);
 
     io.to(user.room).emit(
       "msg3",
-      formatMessage(user.user_id, user.user_nickname, msg)
+      formatMessage(user.user_id, user.user_nickname, msg, time, img)
     );
   });
   socket.on("leaveRoom", (room_id) => {
