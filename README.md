@@ -2,7 +2,7 @@
 
 > 원하는 도서의 정보조회와 채팅을 통한 거래가 가능하며, 판매를 원하는 도서의 등록이 가능한 서비스
 
-<div align="center">
+<div>
 
 <img src="https://user-images.githubusercontent.com/48425930/218382017-5cf66954-a412-4ad2-8d18-12d0bcd64f18.gif" width = '600' >
 
