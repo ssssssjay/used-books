@@ -1,6 +1,5 @@
 <template>
   <div class="container py-5">
-    {{ usedBookDataForRegister.total_status }}
     <form class="col-10 m-auto" @submit.prevent="registerUsedBookData">
       <label class="h5" for="main-search-inp">책 제목을 검색하세요</label>
       <BookSearchInput class="mb-3" @send-book-id="getBookId"></BookSearchInput>
@@ -228,6 +227,7 @@ const registerUsedBookData = async () => {
 
 const changeDescriptionInput = (e) => {
   usedBookDataForRegister.value.description = e.target.value;
+  empty.value = false;
 };
 
 const extraAddress = ref("");
@@ -312,6 +312,7 @@ const upload = async (url, file) => {
 };
 
 const uploadImage = async (files) => {
+  overImg.value = false;
   resultData.value = [];
   imgSrc.value = [];
   console.log(files);
