@@ -1,6 +1,6 @@
 # used-books
 
-> 이 프로젝트를 한 문장으로 나타내기
+> 원하는 도서의 정보조회와 채팅을 통한 거래가 가능하며, 판매를 원하는 도서의 등록이 가능한 서비스
 
 <div align="center">
 
@@ -20,18 +20,22 @@
 | :---------------------------------------------------------------------------------------------------------------------------: | :--------------------------------------------------------------------------------------------------------------------------: |
 | <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/95/Vue.js_Logo_2.svg/300px-Vue.js_Logo_2.svg.png" width=130> | <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d9/Node.js_logo.svg/1180px-Node.js_logo.svg.png" width=130> |
 
-- (erd사진넣기^^)
+## Database
+
+<div align="">
+<img width = 600, src="https://user-images.githubusercontent.com/48425930/218376656-5b83f217-d0d9-4fc1-8d9c-561bcf617e8e.png">
+</div>
 
 ## ⚙️ 사용 api & library
 
-- kakao map
-- aws s3
-- aladin
-- daumpost
+- kakao map API
+- aladin API
+- kakao login API
+- daumpost API
+- vuex
+- AWS s3
 - multer
 - socket.io
-- kakao login
-- vuex
 
 ## 👨‍👩‍👧‍👦 팀원 소개
 
@@ -39,54 +43,70 @@
 | :------------------------------------------------------------------------: | :------------------------------------------------------------------------: |
 | <img src="https://avatars.githubusercontent.com/u/48425930?v=4" width=130> | <img src="https://avatars.githubusercontent.com/u/89081441?v=4" width=130> |
 |                 [@ssssssjay](https://github.com/ssssssjay)                 |                 [@evelo0702](https://github.com/evelo0702)                 |
-|                                  기여사항                                  |                                  기여사항                                  |
 
 <br/>
 
 ## 💁‍♂️ 기여도
 
+> 곽성재
+
+- aladin API를 활용한 도서 검색 및 정보 조회 기능 구현
+- kakao map API를 활용한 주변 도서 렌더링 기능 구현
+- Vuex를 활용한 좋아요 기능 구현
+
+> 노영석
+
+- socket.io을 활용한 채팅기능 구현
+- multer를 활용한 이미지 업로드 기능 구현
+- kakao login API와 Vuex를 활용한 로그인 기능 구현
+
 <br/>
 
 ## 📱 기능 소개
 
-> **알라딘 베스트셀러 조회 및 책 검색** 문장마무리하기.
+> **알라딘 API를** 활용하여 책들의 정보를 알 수 있다.
 
-- 상세사항을 적기
+- 원하는 키워드로 검색하여 특정 책의 정보를 조회할 수 있다.
+- 각 분야별 현재 베스트셀러의 목록을 조회할 수 있다.
 <div align="center">
 <img width = 250, src="">
 </div>
 
-> **좋아요 기능** 문장마무리하기.
+> 판매를 원하는 **중고도서를 등록** 할 수 있다.
 
-- 상세사항을 적기
+- `mysql database`를 활용하여 중고도서를 등록할 수 있다.
+- `multer`를 활용하여 이미지 업로드가 가능하다.
 <div align="center">
 <img width = 250, src="">
 </div>
 
-> **채팅 기능** 문장마무리하기.
+> **원하는 책이나 중고책에 좋아요**를 누를 수 있다.
 
-- 상세사항을 적기
+- `Vuex`를 활용하여 좋아요 기능을 이용할 수 있다.
+- 로컬스토리지를 활용하여 페이지가 새로고침 되어도 상태를 유지한다.
 <div align="center">
 <img width = 250, src="">
 </div>
 
-> **중고책 등록 기능** 문장마무리하기.
+> **socket.io를 활용하여** 채팅이 가능하다.
 
-- 상세사항을 적기
+- `socket.io`를 활용하여 원하는 중고도서의 판매자와 채팅이 가능하다.
 <div align="center">
 <img width = 250, src="">
 </div>
 
-> **내주변 중고책 지도로 확인 기능** 문장마무리하기.
+> **내 주변 중고도서들을** 지도에서 확인 가능하다.
 
-- 상세사항을 적기
+- `geolocation`을 활용하여 내 주변의 중고도서를 확인 가능하다.
+- `daumpostcode`를 활용하여 내 주변에 위치한 중고도서들만이 렌더링 된다.
 <div align="center">
 <img width = 250, src="">
 </div>
 
-> **카카오 로그인 api활용** 문장마무리하기.
+> **카카오 로그인 API를** 활용하여 로그인이 가능하다.
 
-- 상세사항을 적기
+- 카카오 로그인 API와 Vuex를 활용하여 로그인이 가능하다.
+- 비로그인 유저에게는 좋아요나 등록 등의 기능이 불가능하다.
 <div align="center">
 <img width = 250, src="">
 </div>
