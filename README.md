@@ -5,6 +5,7 @@
 <div align="center">
 
 <img src="https://velog.velcdn.com/images/evelo/post/cba2a129-223e-4c32-8c63-91b3bfbd326f/image.gif" >
+<img src="https://user-images.githubusercontent.com/89081441/189131807-e2925ee6-ac3f-421f-863e-71d04adbd17a.gif" height=400>
 
 <br/>
 
