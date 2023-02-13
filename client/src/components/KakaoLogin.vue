@@ -72,15 +72,15 @@ export default {
       this.$store.commit("setLikeBookList", result.likeBookList); // [{},{},{}]
     },
     kakaoLogout() {
-      // window.Kakao.API.request({
-      //   url: "/v1/user/unlink",
-      //   success: function (response) {
-      //     console.log(response);
-      //   },
-      //   fail: function (error) {
-      //     console.log(error);
-      //   },
-      // });
+      window.Kakao.API.request({
+        url: "/v1/user/unlink",
+        success: function (response) {
+          console.log(response);
+        },
+        fail: function (error) {
+          console.log(error);
+        },
+      });
 
       if (!window.Kakao.Auth.getAccessToken()) {
         console.log("로그인 상태가 아닙니다");
