@@ -105,7 +105,7 @@ export default {
     let chatArea = ref(null);
     let refscrollHeight = ref(null);
     let currentRoom = ref(0);
-
+    let sendMsgData = ref([]);
     let chatList = ref([]);
     let chatContent = ref([]);
     let firstRoom = ref(0);
@@ -113,35 +113,19 @@ export default {
     const route = useRoute();
 
     currentRoom.value = Number(route.query.id);
+    const scroll = async () => {
+      msgData.value.push(sendMsgData.value);
+      let chat2 = await refscrollHeight.value;
+      chat2.scrollTo({ top: chat2.scrollHeight, behavior: "smooth" });
+    };
 
     const msgData = ref([]);
-
     socket.on("msg3", async (data) => {
-      // console.log(data);
+      sendMsgData.value = data;
       // chat-content db등록
-      const ResMsg = async () => {
-        await axios.post(`http://localhost:3000/chat/sendMsg`, {
-          param: [
-            {
-              chat_id: currentRoom.value,
-              sender_id: data.sender_id,
-              msg: data.msg,
-              time: data.time,
-            },
-          ],
-        });
-        getChatContent();
-      };
-
-      if (currentRoom.value != null) {
-        ResMsg();
-      }
-      msgData.value.push(data);
-      const scroll = async () => {
-        // console.log(data);
-        let chat = await refscrollHeight.value;
-        chat.scrollTo({ top: chat.scrollHeight, behavior: "smooth" });
-      };
+      // if (currentRoom.value != null) {
+      //   ;
+      // }
       scroll();
     });
 
@@ -186,6 +170,7 @@ export default {
       );
       getChatContent();
     };
+    getChatList();
     // 첫페이지 진입시 제일 위 채팅창
     const getChatContent = async () => {
       const result = await axios.get(`http://localhost:3000/chat/content`, {
@@ -193,18 +178,24 @@ export default {
           chat_id: currentRoom.value,
         },
       });
+
+      chatContent.value[0] = [];
       chatContent.value[0] = result.data;
       msgData.value = [];
       msgData.value = chatContent.value[0];
+
+      const scroll2 = async () => {
+        let chat = await refscrollHeight.value;
+        chat.scrollTo({ top: chat.scrollHeight, behavior: "smooth" });
+      };
+      scroll2();
     };
     const getProductData = async (data) => {
       const result = await axios.get(
         `http://localhost:3000/used-book`,
         data.product_id
       );
-      // console.log(result);
     };
-    // socket.emit("autoJoin", currentRoom.value);
     return {
       msgData,
       scroll,
@@ -219,21 +210,11 @@ export default {
       firstRoom,
       prevRoom,
       chatContent,
+      sendMsgData,
     };
   },
-  created() {
-    this.getChatList();
-  },
-  mounted() {
-    console.log("mounted");
-    console.log(this.$refs.refscrollHeight.scrollHeight);
-
-    // if (isNaN(this.currentRoom)) {
-    //   this.currentRoom = this.chatList[0].room_id;
-    //   this.firstRoom = this.chatList[0].chat_id;
-    //   this.prevRoom = this.currentRoom;
-    // }
-  },
+  created() {},
+  mounted() {},
   unmounted() {
     socket.emit("leaveRoom", this.currentRoom);
     this.msgData = [];
@@ -249,7 +230,8 @@ export default {
 
   methods: {
     changeRoom(user_id, user_nickname, chat_id, prev) {
-      socket.emit("leaveRoom", chat_id);
+
+      socket.emit("leaveRoom", prev);
       this.msgData = [];
       this.prevRoom = this.currentRoom;
       if (this.currentRoom !== chat_id) {
@@ -260,12 +242,10 @@ export default {
             id: chat_id,
           },
         });
-        console.log("========");
-        console.log(prev);
+
         this.currentRoom = chat_id;
         socket.emit("joinRoom", { user_id, user_nickname, chat_id, prev });
         this.getChatContent();
-        // console.log(`currentRoom ${this.currentRoom}`);
       }
     },
     // scroll() {
@@ -278,19 +258,46 @@ export default {
     //   // chat.scrollIntoView(false);
     //   chat.scrollTo({ top: chat.scrollHeight, behavior: "smooth" });
     // },
-    sendMsg(msg) {
-      if (this.currentRoom != 0) {
-        socket.emit("chatMsg", msg);
-        this.newMsg = "";
-        console.log(msg);
-      }
-    },
+    // const scroll = () => {
+    //     // console.log(data);
+    //     let chat = refscrollHeight.value;
+    //     console.log(chat);
+    //     chat.scrollTo({ top: chat.scrollHeight, behavior: "smooth" });
+    //   };
     msgHeight() {
-      let chatHeight = this.$refs.chatArea;
+      let chatHeight = this.$refs.refscrollHeight;
+
       chatHeight.scrollTo({
         top: chatHeight.scrollHeight,
         behavior: "smooth",
       });
+    },
+    sendMsg(msg) {
+      if (this.currentRoom != 0) {
+
+        let date = new Date();
+        let month = date.getMonth();
+        let day = date.getDate();
+        let hours = date.getHours();
+        let min = date.getMinutes();
+        let time = month + "월" + day + "일" + "  " + hours + "시" + min + "분";
+
+        const ResMsg = async () => {
+          await axios.post(`http://localhost:3000/chat/sendMsg`, {
+            param: [
+              {
+                chat_id: this.currentRoom,
+                sender_id: this.user.user_id,
+                msg: msg,
+                time: time,
+              },
+            ],
+          });
+        };
+        ResMsg();
+        socket.emit("chatMsg", msg, time, this.user.user_image);
+        this.newMsg = "";
+      }
     },
   },
 };
