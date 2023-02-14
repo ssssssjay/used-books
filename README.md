@@ -53,9 +53,9 @@
 
 > 노영석
 
-- socket.io을 활용한 채팅기능 구현
-- multer를 활용한 이미지 업로드 기능 구현
+- socket.io을 활용한 1:1 채팅기능 구현
 - kakao login API와 Vuex를 활용한 로그인 기능 구현
+- aws rds, s3를 활용한 db, 이미지 업로드 업로드 구현
 
 <br/>
 
