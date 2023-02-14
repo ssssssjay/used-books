@@ -4,8 +4,7 @@
 
 <div>
 
-<img src="https://user-images.githubusercontent.com/48425930/218382017-5cf66954-a412-4ad2-8d18-12d0bcd64f18.gif" width = '600' >
-<img src="https://user-images.githubusercontent.com/89081441/218387487-c3609dd8-cf96-45a7-987d-1d8c96a81969.gif" width = '600' >
+<img src="https://user-images.githubusercontent.com/89081441/218637796-889177dd-9b0f-4bc3-ab14-970f5dbc7627.gif" width = '600' >
 <br/>
 
 </div>
@@ -67,7 +66,7 @@
 - 원하는 키워드로 검색하여 특정 책의 정보를 조회할 수 있다.
 - 각 분야별 현재 베스트셀러의 목록을 조회할 수 있다.
 <div align="center">
-<img width = 600, src="https://velog.velcdn.com/images/evelo/post/3de8ad1f-66d7-42aa-8ad1-c5f25f9cfb75/image.gif" >
+<img width = 600, src="https://user-images.githubusercontent.com/89081441/218637802-ba5961c0-c601-4d3e-a259-d69058ea16b4.gif" >
 </div>
 
 > 판매를 원하는 **중고도서를 등록** 할 수 있다.
@@ -75,7 +74,7 @@
 - `mysql database`를 활용하여 중고도서를 등록할 수 있다.
 - `multer`를 활용하여 이미지 업로드가 가능하다.
 <div align="center">
-<img width = 600, src="https://velog.velcdn.com/images/evelo/post/dd258c70-d69c-4211-9a14-6eaace68d3c4/image.gif" >
+<img width = 600, src="https://user-images.githubusercontent.com/89081441/218637807-2d2ffed6-5eb5-4796-9700-82047c8f6842.gif" >
 </div>
 
 > **원하는 책이나 중고책에 좋아요**를 누를 수 있다.
@@ -83,14 +82,14 @@
 - `Vuex`를 활용하여 좋아요 기능을 이용할 수 있다.
 - 로컬스토리지를 활용하여 페이지가 새로고침 되어도 상태를 유지한다.
 <div align="center">
-<img width = 600, src="https://velog.velcdn.com/images/evelo/post/87c2514c-a2e0-4258-a8c4-22b51b5fda8f/image.gif" >
+<img width = 600, src="https://user-images.githubusercontent.com/89081441/218637805-981ddf1e-6d1b-4cb5-8a0d-5d4cda7d4d70.gif" >
 </div>
 
 > **socket.io를 활용하여** 채팅이 가능하다.
 
 - `socket.io`를 활용하여 원하는 중고도서의 판매자와 채팅이 가능하다.
 <div align="center">
-<img width = 600, src="https://velog.velcdn.com/images/evelo/post/cbdc2b17-c125-4695-9688-08fe31855c29/image.gif" >
+<img width = 600, src="https://user-images.githubusercontent.com/89081441/218637811-4c2048f2-647a-44f3-a08f-7f40649e03d3.gif" >
 </div>
 
 > **내 주변 중고도서들을** 지도에서 확인 가능하다.
@@ -106,7 +105,7 @@
 - 카카오 로그인 API와 Vuex를 활용하여 로그인이 가능하다.
 - 비로그인 유저에게는 좋아요나 등록 등의 기능이 불가능하며, 네비게이션 가드를 활용하여 페이지 접근이 불가하다.
 <div align="center">
-<img width = 600, src="https://velog.velcdn.com/images/evelo/post/e233db5e-0db7-48aa-9131-dcda678279b4/image.gif" >
+<img width = 600, src="https://user-images.githubusercontent.com/89081441/218637814-ad425bbc-1d9f-4baf-84a6-b905ff131ecc.gif" >
 </div>
 
 <br/>
