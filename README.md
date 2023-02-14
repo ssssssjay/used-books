@@ -18,7 +18,8 @@
 | <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/95/Vue.js_Logo_2.svg/300px-Vue.js_Logo_2.svg.png" width=130> | <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d9/Node.js_logo.svg/1180px-Node.js_logo.svg.png" width=130> |
 
 ## Database
-MYSQL <img src="http://pngimg.com/uploads/mysql/mysql_PNG35.png" width=130>
+
+<img src="http://pngimg.com/uploads/mysql/mysql_PNG35.png" width=130>
 
 <div align="">
 <img width = 600, src="https://user-images.githubusercontent.com/48425930/218376656-5b83f217-d0d9-4fc1-8d9c-561bcf617e8e.png">
