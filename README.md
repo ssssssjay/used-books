@@ -69,7 +69,7 @@
 - 원하는 키워드로 검색하여 특정 책의 정보를 조회할 수 있다.
 - 각 분야별 현재 베스트셀러의 목록을 조회할 수 있다.
 <div align="center">
-<img width = 600, src="https://user-images.githubusercontent.com/89081441/218637802-ba5961c0-c601-4d3e-a259-d69058ea16b4.gif" style="margin-bottom:500px">
+<img style="margin-bottom:100px" width = 600, src="https://user-images.githubusercontent.com/89081441/218637802-ba5961c0-c601-4d3e-a259-d69058ea16b4.gif" style="margin-bottom:500px">
 </div>
 
 > 판매를 원하는 **중고도서를 등록** 할 수 있다.
@@ -77,7 +77,7 @@
 - `mysql database`를 활용하여 중고도서를 등록할 수 있다.
 - `multer`를 활용하여 이미지 업로드가 가능하다.
 <div align="center">
-<img width = 600, src="https://user-images.githubusercontent.com/89081441/218637807-2d2ffed6-5eb5-4796-9700-82047c8f6842.gif" >
+<img style="margin-bottom:100px" width = 600, src="https://user-images.githubusercontent.com/89081441/218637807-2d2ffed6-5eb5-4796-9700-82047c8f6842.gif" >
 </div>
 
 > **원하는 책이나 중고책에 좋아요**를 누를 수 있다.
@@ -85,14 +85,14 @@
 - `Vuex`를 활용하여 좋아요 기능을 이용할 수 있다.
 - 로컬스토리지를 활용하여 페이지가 새로고침 되어도 상태를 유지한다.
 <div align="center">
-<img width = 600, src="https://user-images.githubusercontent.com/89081441/218637805-981ddf1e-6d1b-4cb5-8a0d-5d4cda7d4d70.gif" >
+<img style="margin-bottom:100px" width = 600, src="https://user-images.githubusercontent.com/89081441/218637805-981ddf1e-6d1b-4cb5-8a0d-5d4cda7d4d70.gif" >
 </div>
 
 > **socket.io를 활용하여** 채팅이 가능하다.
 
 - `socket.io`를 활용하여 원하는 중고도서의 판매자와 채팅이 가능하다.
 <div align="center">
-<img width = 600, src="https://user-images.githubusercontent.com/89081441/218637811-4c2048f2-647a-44f3-a08f-7f40649e03d3.gif" >
+<img style="margin-bottom:100px" width = 600, src="https://user-images.githubusercontent.com/89081441/218637811-4c2048f2-647a-44f3-a08f-7f40649e03d3.gif" >
 </div>
 
 > **내 주변 중고도서들을** 지도에서 확인 가능하다.
