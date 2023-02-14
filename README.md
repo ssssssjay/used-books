@@ -69,7 +69,7 @@
 - 원하는 키워드로 검색하여 특정 책의 정보를 조회할 수 있다.
 - 각 분야별 현재 베스트셀러의 목록을 조회할 수 있다.
 <div align="center">
-<img width = 600, src="https://user-images.githubusercontent.com/89081441/218637802-ba5961c0-c601-4d3e-a259-d69058ea16b4.gif" >
+<img width = 600, src="https://user-images.githubusercontent.com/89081441/218637802-ba5961c0-c601-4d3e-a259-d69058ea16b4.gif" style="margin-bottom:500px">
 </div>
 
 > 판매를 원하는 **중고도서를 등록** 할 수 있다.
