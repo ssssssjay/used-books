@@ -30,8 +30,9 @@
 - kakao login API
 - daumpost API
 - vuex
+- AWS RDS
 - AWS s3
-- multer
+- cors
 - socket.io
 
 ## 👨‍👩‍👧‍👦 팀원 소개
