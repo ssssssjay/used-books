@@ -51,15 +51,18 @@
 > 곽성재
 
 - aladin API를 활용한 도서 검색 및 정보 조회 기능 구현
-- kakao map API를 활용한 주변 도서 렌더링 기능 구현
+- 현재 위치를 기반으로 주변 도서 렌더링 기능 구현
 - Vuex를 활용한 좋아요 기능 구현
-
+- 중고 도서 db 등록 기능 구현
+- kakao map API를 활용한 지도 구현  
 > 노영석
 
+- Node.js 를 통한 서버 구축
 - socket.io을 활용한 1:1 채팅기능 구현
 - kakao login API와 Vuex를 활용한 로그인 기능 구현
 - aws rds, s3를 활용한 db, 이미지 업로드 업로드 구현
 - daumpost api , kakao map api를 활용해 주소, 위도 경도 찾기 구현
+
 <br/>
 
 ## 📱 기능 소개
