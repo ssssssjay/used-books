@@ -82,7 +82,7 @@
         <li
           class="card-used_book"
           v-for="usedBook in usedBookListRender"
-          :key="usedBook.id">
+          :key="usedBook.product_id">
           <UsedBookCard
             :title="usedBook.title"
             :location="usedBook.location"
@@ -104,13 +104,17 @@ import BookSearchInput from "@/components/BookSearchInput.vue";
 import KakaoMapComponent from "@/components/KakaoMapComponent.vue";
 import { useRouter } from "vue-router";
 import axios from "axios";
-import { ref, onMounted } from "vue";
+import { ref } from "vue";
 import { BOOK_CODE } from "@/store/BookCode";
+
+// types
+import type CommonBook from "@/types/CommonBook";
+import type UsedBook from "@/types/UsedBook";
 
 const router = useRouter();
 
 const bestCategory = ref({ code: 351, name: "컴퓨터" });
-const bestSellerList = ref([] as any);
+const bestSellerList = ref<CommonBook[]>([]);
 
 const getBestSeller = async (categoryId: number) => {
   const result = await axios
@@ -141,15 +145,16 @@ const moveToBookDetail = (bookid: any) => {
   });
 };
 
-const test = ref(null);
-const carousel = (dir) => {
-  // %로 이동하는 방법은 없나?
-  if (dir === "left") {
-    test.value.style = `transform: translateX(${
-      -test.value.offsetWidth - 20
-    }px)`;
-  } else {
-    test.value.style = `transform: translateX(${0}px)`;
+const test = ref<HTMLOListElement | null>(null);
+const carousel = (dir: "left" | "right") => {
+  if (test.value) {
+    if (dir === "left") {
+      test.value.style.transform = `translateX(${
+        -test.value.offsetWidth - 20
+      }px)`;
+    } else {
+      test.value.style.transform = `translateX(${0}px)`;
+    }
   }
 };
 
@@ -174,8 +179,8 @@ const moveToUsedDetail = (usedId: any) => {
   });
 };
 
-const usedBookListRender = ref([]);
-const renderNearby = (param) => {
+const usedBookListRender = ref<UsedBook[]>([]);
+const renderNearby = (param: UsedBook) => {
   console.log("succeess", param);
   usedBookListRender.value.push(param);
 };
