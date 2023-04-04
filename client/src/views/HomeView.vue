@@ -82,7 +82,7 @@
         <li
           class="card-used_book"
           v-for="usedBook in usedBookListRender"
-          :key="usedBook.product_id">
+          :key="usedBook.id">
           <UsedBookCard
             :title="usedBook.title"
             :location="usedBook.location"
@@ -104,17 +104,13 @@ import BookSearchInput from "@/components/BookSearchInput.vue";
 import KakaoMapComponent from "@/components/KakaoMapComponent.vue";
 import { useRouter } from "vue-router";
 import axios from "axios";
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 import { BOOK_CODE } from "@/store/BookCode";
-
-// types
-import type CommonBook from "@/types/CommonBook";
-import type UsedBook from "@/types/UsedBook";
 
 const router = useRouter();
 
 const bestCategory = ref({ code: 351, name: "컴퓨터" });
-const bestSellerList = ref<CommonBook[]>([]);
+const bestSellerList = ref([] as any);
 
 const getBestSeller = async (categoryId: number) => {
   const result = await axios
@@ -145,21 +141,19 @@ const moveToBookDetail = (bookid: any) => {
   });
 };
 
-const test = ref<HTMLOListElement | null>(null);
-const carousel = (dir: "left" | "right") => {
-  if (test.value) {
-    if (dir === "left") {
-      test.value.style.transform = `translateX(${
-        -test.value.offsetWidth - 20
-      }px)`;
-    } else {
-      test.value.style.transform = `translateX(${0}px)`;
-    }
+const test = ref(null);
+const carousel = (dir) => {
+  // %로 이동하는 방법은 없나?
+  if (dir === "left") {
+    test.value.style = `transform: translateX(${
+      -test.value.offsetWidth - 20
+    }px)`;
+  } else {
+    test.value.style = `transform: translateX(${0}px)`;
   }
 };
 
-const usedBookList = ref<UsedBook[] | null>(null);
-// const usedBookList = ref<UsedBook[]>([]);
+const usedBookList = ref(null);
 
 const getAllUsedBook = async () => {
   const result = await axios("http://localhost:3000/used-book/all");
@@ -170,7 +164,7 @@ const getAllUsedBook = async () => {
 
 getAllUsedBook();
 
-const moveToUsedDetail = (usedId: string) => {
+const moveToUsedDetail = (usedId: any) => {
   window.scrollTo(0, 0);
   router.push({
     name: "UsedBook",
@@ -180,8 +174,8 @@ const moveToUsedDetail = (usedId: string) => {
   });
 };
 
-const usedBookListRender = ref<UsedBook[]>([]);
-const renderNearby = (param: UsedBook) => {
+const usedBookListRender = ref([]);
+const renderNearby = (param) => {
   console.log("succeess", param);
   usedBookListRender.value.push(param);
 };
