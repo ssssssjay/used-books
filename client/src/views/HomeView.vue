@@ -158,7 +158,8 @@ const carousel = (dir: "left" | "right") => {
   }
 };
 
-const usedBookList = ref(null);
+const usedBookList = ref<UsedBook[] | null>(null);
+// const usedBookList = ref<UsedBook[]>([]);
 
 const getAllUsedBook = async () => {
   const result = await axios("http://localhost:3000/used-book/all");
@@ -169,7 +170,7 @@ const getAllUsedBook = async () => {
 
 getAllUsedBook();
 
-const moveToUsedDetail = (usedId: any) => {
+const moveToUsedDetail = (usedId: string) => {
   window.scrollTo(0, 0);
   router.push({
     name: "UsedBook",
