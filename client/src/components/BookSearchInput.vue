@@ -36,7 +36,7 @@
           <li
             class="list-group-item list-group-item-action"
             v-for="book in bookSearchResults"
-            :key="book.isbn"
+            :key="book"
             @click="divertMoveOrSelect(book.isbn13)">
             {{ book.title }}
           </li>
@@ -49,18 +49,15 @@
 <script setup lang="ts">
 import BookCard from "@/components/BookCard.vue";
 import { ref, computed } from "vue";
-import { useRouter, useRoute } from "vue-router";
 import axios from "axios";
-
-// types
-import type CommonBook from "@/types/CommonBook";
+import { useRouter, useRoute } from "vue-router";
 
 const router = useRouter();
 const route = useRoute();
 
 const searchBookQuery = ref("");
 const queryTimeout = ref(0);
-const bookSearchResults = ref<CommonBook[] | null>(null);
+const bookSearchResults = ref<null | any>(null);
 
 const searchBook = (e: Event) => {
   searchBookQuery.value = (e.target as HTMLInputElement).value;
@@ -96,21 +93,18 @@ const submitBookSearchInput = () => {
         q: searchBookQuery.value,
       },
     });
-    const inp: HTMLInputElement | null =
-      document.querySelector(".main-search-inp");
-    if (inp) {
-      inp.blur();
-    }
+    const inp = document.querySelector(".main-search-inp");
+    inp.blur();
     searchBookQuery.value = "";
   }
 };
 
-const validateBookSearchInput = (input: string) => {
+const validateBookSearchInput = (input) => {
   if (input.length === 0) return false;
   return true;
 };
 
-const moveToBookDetail = (bookid: string) => {
+const moveToBookDetail = (bookid) => {
   router.push({
     name: "book",
     query: {
@@ -122,14 +116,14 @@ const moveToBookDetail = (bookid: string) => {
 const isHomeRoute = computed(() => route.path === "/");
 
 const body = document.getElementById("app");
-body!.addEventListener("click", (e: Event) => {
-  if (!(e.target as HTMLElement).classList.contains("list-group-item")) {
+body?.addEventListener("click", (e) => {
+  if (!e.target.classList.contains("list-group-item")) {
     bookSearchResults.value = null;
   }
 });
 
 // 페이지이동인지 중고등록 때 선택인지 반환하는 함수
-const divertMoveOrSelect = (bookid: string) => {
+const divertMoveOrSelect = (bookid) => {
   if (isCreateRoute.value) {
     selectBook(bookid);
   } else if (!isCreateRoute.value) {
@@ -137,15 +131,15 @@ const divertMoveOrSelect = (bookid: string) => {
   }
 };
 
-const selectBookData = ref<CommonBook | null>(null);
+const selectBookData = ref(null);
 const emit = defineEmits(["sendBookId"]);
-const selectBook = async (bookid: string) => {
+const selectBook = async (bookid) => {
   const result = await axios.get(
     `http://localhost:3000/book/detail?id=${bookid}`
   );
   if (result.status === 200) {
     selectBookData.value = result.data.item[0];
-    searchBookQuery.value = selectBookData.value!.title;
+    searchBookQuery.value = selectBookData.value.title;
   }
   emit("sendBookId", bookid);
   bookSearchResults.value = null;
@@ -175,6 +169,7 @@ const selectBook = async (bookid: string) => {
   outline: solid #457e2b;
 }
 .main-search-inp.header {
+  /* width: 180px; */
   border-radius: 3px;
   border: 1px solid #bdbdbd;
   padding: 8px 12px;
@@ -191,8 +186,5 @@ const selectBook = async (bookid: string) => {
 .list-group {
   width: 100%;
   z-index: 10;
-}
-.list-group .list-group-item {
-  width: 100%;
 }
 </style>
