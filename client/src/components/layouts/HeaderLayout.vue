@@ -115,6 +115,9 @@ export default {
 };
 </script>
 <style scoped>
+nav.container ul {
+  height: 40px;
+}
 .active {
   color: #457e2b;
 }
