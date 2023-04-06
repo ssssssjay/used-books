@@ -149,7 +149,7 @@ const route = useRoute();
 const router = useRouter();
 
 const bookData = ref<CommonBook | null>(null);
-const bookCategoryId = ref(0);
+// const bookCategoryId = ref(0); // bookData안에 있으므로 불필요하다고 판단
 const bestSeller = ref<CommonBook[]>([]);
 const bookId = ref("");
 const haveUsedList = ref(false);
@@ -184,7 +184,7 @@ const carousel2 = (dir: string) => {
 };
 
 // setup이 mount보다 이전이니, 이 때 함수를 실행해도..?
-bookId.value = route.query.id as string;
+bookId.value = route.query.id as string; // <TODO> as?
 getBookDetailData(bookId.value);
 getUsedBook(bookId.value);
 // onMounted(() => {
@@ -202,16 +202,19 @@ onUpdated(() => {
   }
 });
 
-async function getBookDetailData(bookId: any) {
+async function getBookDetailData(bookId: string) {
   // console.log(bookId);
   const result = await mixins.methods.$get(
     `http://localhost:3000/book/detail?id=${bookId}`
   );
   // console.log(result);
   bookData.value = result.item[0];
-  bookCategoryId.value = result.item[0].categoryId;
 
-  getBestSeller(bookCategoryId.value);
+  // bookCategoryId.value = result.item[0].categoryId;
+  // getBestSeller(bookCategoryId.value);
+
+  // getBestSeller(bookData.value!.categoryId);
+  if (bookData.value) getBestSeller(bookData.value.categoryId);
 }
 
 async function getBestSeller(categoryId: number) {
@@ -304,11 +307,9 @@ async function deleteLibrary() {
 }
 
 const isLibraryCart = computed(() => {
-  // console.log(store.state.likeBookList);
-  // return store.state.likeBookList.some(
-  //   (book) => book.isbn13 === bookData.value.isbn13
-  // );
-  return false;
+  return store.state.likeBookList.some(
+    (book: CommonBook) => book.isbn13 === bookData.value?.isbn13
+  );
 });
 </script>
 
@@ -359,7 +360,7 @@ const isLibraryCart = computed(() => {
   font-size: 18px;
   line-height: 25px;
   overflow-y: auto;
-  font-weight: 700;
+  /* font-weight: 700; */
 }
 .library {
   float: right;
@@ -405,10 +406,6 @@ div .used-info {
 }
 .product-title {
   text-align: center;
-}
-.btn-add-library {
-  font-size: 18px;
-  height: 38px;
 }
 .btn-add-library:hover {
   background-color: #fff;

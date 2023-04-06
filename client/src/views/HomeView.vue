@@ -85,6 +85,7 @@
           :key="usedBook.product_id">
           <UsedBookCard
             :title="usedBook.title"
+            :product_id="usedBook.product_id"
             :location="usedBook.location"
             :seller_user_nickname="usedBook.seller_user_nickname"
             :price="usedBook.price"
@@ -170,7 +171,7 @@ const getAllUsedBook = async () => {
 
 getAllUsedBook();
 
-const moveToUsedDetail = (usedId: string) => {
+const moveToUsedDetail = (usedId: number) => {
   window.scrollTo(0, 0);
   router.push({
     name: "UsedBook",
