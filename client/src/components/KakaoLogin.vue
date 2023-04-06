@@ -15,6 +15,9 @@
   </div>
 </template>
 <script>
+// TODO lang=ts, setup, mixins => composable
+import mixins from "@/mixins";
+
 export default {
   components: {},
   data() {
@@ -50,7 +53,7 @@ export default {
     },
     // uniq 설정
     async dbRes(data) {
-      await this.$post("http://localhost:3000/user/login", {
+      await mixins.methods.$post("http://localhost:3000/user/login", {
         param: [
           {
             user_nickname: data.profile.nickname,
@@ -63,7 +66,7 @@ export default {
           },
         ],
       });
-      const result = await this.$get(
+      const result = await mixins.methods.$get(
         `http://localhost:3000/user?email=${data.email}`
       );
       this.$store.commit("setUser", result.user);
