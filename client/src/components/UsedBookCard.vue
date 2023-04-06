@@ -22,17 +22,17 @@
 
 <script setup lang="ts">
 import { computed } from "vue";
+const props = defineProps<{
+  title: string;
+  categoryName: string;
+  location: string;
+  cover: string;
+  product_id: number;
+  seller_user_nickname: string;
+  price: number;
+}>();
 
-const props: any = defineProps({
-  title: String,
-  categoryName: String,
-  location: String,
-  cover: String,
-  product_id: Number,
-  seller_user_nickname: String,
-  price: Number,
-});
-
+// console.log(props);
 const validateString = (
   targetString: string,
   targetIndex: number,
