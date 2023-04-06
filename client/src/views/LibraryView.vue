@@ -29,7 +29,7 @@
         v-show="typeOfBook.isBook"
         class="sect-book p-4 border border-top-0 rounded-bottom">
         <ol class="d-flex flex-wrap">
-          <li v-for="likeBook in likeBookList" :key="likeBook.book_id">
+          <li v-for="likeBook in likeBookList" :key="likeBook.isbn13">
             <BookCard
               :category="likeBook.categoryName"
               :imgPath="likeBook.cover"
@@ -64,12 +64,16 @@ import UsedBookCard from "@/components/UsedBookCard.vue";
 import { useRoute, useRouter } from "vue-router";
 import { useStore } from "vuex";
 
+// types
+import type CommonBook from "@/types/CommonBook";
+import type UsedBook from "@/types/UsedBook";
+
 const route = useRoute();
 const router = useRouter();
 const store = useStore();
 
-const likeUsedBookList = ref([]);
-const likeBookList = ref([]);
+const likeUsedBookList = ref<UsedBook[]>([]);
+const likeBookList = ref<CommonBook[]>([]);
 
 onMounted(() => {
   likeUsedBookList.value = store.state.likeUsedBookList;
@@ -97,7 +101,7 @@ const typeChange = (type: string) => {
   });
 };
 
-const routerMove = (id) => {
+const routerMove = (id: string | number) => {
   if (typeOfBook.value.isUsedBook) {
     router.push({
       name: "UsedBook",
