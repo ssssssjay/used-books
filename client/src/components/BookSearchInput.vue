@@ -1,10 +1,9 @@
 <template>
   <div>
-    <div class="main-search-wrapper">
+    <div class="main-search-wrapper" :class="{ header: !isHomeRoute }">
       <form @submit.prevent="submitBookSearchInput">
         <input
           class="main-search-inp"
-          :class="{ header: !isHomeRoute }"
           type="text"
           placeholder="검색어를 입력하세요"
           :value="searchBookQuery"
@@ -58,20 +57,18 @@ import type CommonBook from "@/types/CommonBook";
 const router = useRouter();
 const route = useRoute();
 
-const searchBookQuery = ref("");
-const queryTimeout = ref(0);
+let searchBookQuery: string | null = null;
+let queryTimeout = 0;
 const bookSearchResults = ref<CommonBook[] | null>(null);
 
 const searchBook = (e: Event) => {
-  searchBookQuery.value = (e.target as HTMLInputElement).value;
-  clearTimeout(queryTimeout.value);
-  // 셋 타임 아웃은 고유 아이디를 뱉어냅니다
-  // 이 고유 아이디를 클리어 타임아웃에 넣어주면 실행을 취소 합니다
-  queryTimeout.value = setTimeout(async () => {
-    if (searchBookQuery.value !== "") {
+  searchBookQuery = (e.target as HTMLInputElement).value;
+  clearTimeout(queryTimeout);
+  queryTimeout = setTimeout(async () => {
+    if (searchBookQuery !== "") {
       const result = await axios.get("http://localhost:3000/book/search", {
         params: {
-          q: searchBookQuery.value,
+          q: searchBookQuery,
           // TODO: 라우트에 따른 반환갯수 조절
           // cnt: 10,
         },
@@ -89,11 +86,12 @@ const submitBookSearchInput = () => {
   if (isCreateRoute.value) {
     return;
   }
-  if (validateBookSearchInput(searchBookQuery.value)) {
+  // TODO !(assertion)
+  if (validateBookSearchInput(searchBookQuery!)) {
     router.push({
       name: "search",
       query: {
-        q: searchBookQuery.value,
+        q: searchBookQuery,
       },
     });
     const inp: HTMLInputElement | null =
@@ -101,7 +99,7 @@ const submitBookSearchInput = () => {
     if (inp) {
       inp.blur();
     }
-    searchBookQuery.value = "";
+    searchBookQuery = "";
   }
 };
 
@@ -145,7 +143,7 @@ const selectBook = async (bookid: string) => {
   );
   if (result.status === 200) {
     selectBookData.value = result.data.item[0];
-    searchBookQuery.value = selectBookData.value!.title;
+    searchBookQuery = selectBookData.value!.title;
   }
   emit("sendBookId", bookid);
   bookSearchResults.value = null;
@@ -153,11 +151,8 @@ const selectBook = async (bookid: string) => {
 </script>
 
 <style scoped>
-.main-search-wrapper form {
+.main-search-wrapper {
   position: relative;
-}
-.main-search-wrapper.header {
-  width: 180px;
 }
 .main-search-inp {
   width: 100%;
@@ -174,25 +169,39 @@ const selectBook = async (bookid: string) => {
   box-shadow: rgba(0, 0, 0, 0.24) 0px 8px 12px;
   outline: solid #457e2b;
 }
-.main-search-inp.header {
+.main-search-btn {
+  position: absolute;
+  top: 50%;
+  right: 2%;
+  transform: translateY(-50%);
+}
+
+.list-group {
+  width: 100%;
+}
+.list-group .list-group-item {
+  width: inherit;
+  cursor: pointer;
+}
+
+.header .main-search-inp {
+  width: 260px;
   border-radius: 3px;
   border: 1px solid #bdbdbd;
   padding: 8px 12px;
   font-size: 14px;
   box-shadow: none;
 }
-.main-search-btn {
-  position: absolute;
-  top: 50%;
-  right: 3%;
-  transform: translateY(-45%);
+
+.header .main-search-inp:focus {
+  border: 1px solid #fff;
+  outline: solid #457e2b;
+}
+.header .main-search-btn {
+  right: 4%;
 }
 
-.list-group {
-  width: 100%;
-  z-index: 10;
-}
-.list-group .list-group-item {
-  width: 100%;
+.header .list-group-item {
+  font-size: 0.8em;
 }
 </style>
