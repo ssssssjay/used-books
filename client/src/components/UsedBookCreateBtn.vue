@@ -19,12 +19,12 @@ const goUsedBookCreatePage = () => {
   router.push("/used-book/create");
 };
 
-const btnCreate = ref(null);
+const btnCreate = ref<HTMLButtonElement | null>(null);
 watch(route, (newRoute) => {
   if (newRoute.path === "/used-book/create" || newRoute.path === "/chat") {
-    btnCreate.value.style = "display: none;";
+    btnCreate.value!.style.display = "none;"; // TODO: type assertion??
   } else {
-    btnCreate.value.style = "display: block;";
+    btnCreate.value!.style.display = "block;";
   }
 });
 </script>
