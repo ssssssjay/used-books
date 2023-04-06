@@ -1,7 +1,7 @@
 import type CommonBook from "./CommonBook";
 
 interface UsedBook extends CommonBook {
-  product_id: string;
+  product_id: number;
   book_id: string;
   seller_user_id: number;
   seller_user_nickname: string;
