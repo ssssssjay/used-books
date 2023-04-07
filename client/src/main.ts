@@ -7,6 +7,7 @@ import "bootstrap-icons/font/bootstrap-icons.css";
 import "@/styles/reset.css";
 import "@/styles/main.css";
 import store from "@/store";
+import funcPlugins from "@/plugins/main";
 
 import App from "./App.vue";
 import router from "./router";
@@ -17,6 +18,7 @@ app.use(createPinia());
 app.use(router);
 app.use(store);
 // app.mixin(mixins);
+app.use(funcPlugins(app)); // 이건 도저히 몰루?
 app.mount("#app");
 
 window.Kakao.init("4b6c5749640870e5658414bdbfd3d03c");
