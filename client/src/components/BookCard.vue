@@ -16,7 +16,10 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed, inject } from "vue";
+import type ConvertString from "@/types/ConvertString";
+// prettier-ignore
+const convertString = inject("convertString") as ConvertString;
 
 // "타입 기반 선언(type-based declaration)"이라고 합니다. 컴파일러는 타입 전달인자를 기반으로 같은 런타임 옵션을 추론 하도록 시도합니다
 const props = defineProps<{
@@ -33,17 +36,6 @@ const props = defineProps<{
 //   title: String,
 //   author: String,
 // });
-
-// prettier-ignore
-const convertString = (targetString: string, targetIndex: number, seperator: string): string => {
-  if (targetString === undefined) {
-    return "no-data";
-  }
-  if (targetString.split(seperator)[targetIndex] === undefined) {
-    return targetString;
-  }
-  return targetString.split(seperator)[targetIndex];
-};
 
 const convertedCategory = computed(() => convertString(props.category, 1, ">"));
 const convertedTitle = computed(() => convertString(props.title, 0, "-"));
